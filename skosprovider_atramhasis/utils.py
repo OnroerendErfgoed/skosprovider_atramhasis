@@ -165,22 +165,21 @@ def dict_to_thing(dict):
         if 'id' in dict:
             id = dict['id']
         else:
-            raise ValueError("fgds")
+            raise ValueError("id: No id available in dict")
 
         if 'type' in dict:
             type = dict['type']
         else:
-            raise ValueError("fgds")
+            raise ValueError("type: type is not defined in dict")
 
         if type == 'concept':
             thing = Concept(id)
         elif type == 'collection':
             thing = Collection(id)
         else:
-            raise ValueError("fg")
+            raise ValueError("type: type is not valid ('concept', 'collection') in dict")
         thing.type = type
-
-
+        thing.label = dict['label'] if 'label' in dict else None
         labels = dict['labels'] if 'labels' in dict else None
         for l in labels:
             thing.labels.append(dict_to_label(l))
@@ -189,8 +188,8 @@ def dict_to_thing(dict):
             thing.notes.append(dict_to_note(n))
         thing.uri = dict['uri'] if 'uri' in dict else None
         # thing.concept_scheme = dict['concept_scheme'] if 'concept_scheme' in dict else None
-        # thing.notes = dict['notes'] if 'notes' in dict else None
         # thing.broader = dict['broader'] if 'broader' in dict else None
+        # thing.label = dict['label'] if 'label' in dict else None
         # thing.narrower = dict['narrower'] if 'narrower' in dict else None
         # thing.related = dict['related'] if 'related' in dict else None
         # thing.member_of = dict['member_of'] if 'member_of' in dict else None

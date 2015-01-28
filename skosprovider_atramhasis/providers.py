@@ -9,18 +9,16 @@ from requests.exceptions import ConnectionError
 
 import warnings
 import logging
-from skosprovider.skos import ConceptScheme, Concept
+from skosprovider.skos import ConceptScheme
 from skosprovider_atramhasis.utils import _split_uri, dict_to_thing
 
 log = logging.getLogger(__name__)
-
-from language_tags import tags
 
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
 
 class AtramhasisProvider(VocabularyProvider):
-    """A provider that can work with the Atramhasis REST services
+    """A provider that can work with the Atramhasis REST services (based on pyramid_skosprovider)
     """
 
     def __init__(self, metadata, **kwargs):
@@ -56,17 +54,10 @@ class AtramhasisProvider(VocabularyProvider):
             Returns None if non-existing id
         """
         request = self.scheme_uri + "/c/" + str(id)
-        try:
-            res = requests.get(request, headers={'Accept':'application/json'})
-        except ConnectionError as e:
-            raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request))
-        res.encoding = 'utf-8'
-        if res.status_code==404:
+        response = self._request(request, {'Accept': 'application/json'})
+        if response.status_code == 404:
             return False
-        result = res.json()
-        answer = dict_to_thing(result)
-        if not answer:
-            return False
+        answer = dict_to_thing(response.json())
         return answer
 
     def get_by_uri(self, uri):
@@ -135,26 +126,43 @@ class AtramhasisProvider(VocabularyProvider):
                 determined by looking at the `**kwargs` parameter, the default \
                 language of the provider and finally falls back to `en`.
         '''
+
         # #  interprete and validate query parameters (label, type and collection)
         # Label
         label = None
         if 'label' in query:
             label = query['label']
+
         # Type: 'collection','concept' or 'all'
         type_c = 'all'
         if 'type' in query:
             type_c = query['type']
         if type_c not in ('all', 'concept', 'collection'):
             raise ValueError("type: only the following values are allowed: 'all', 'concept', 'collection'")
-        #collection
+
+        #Collection to search in (optional)
+        children = False
         if 'collection' in query:
             collection = query['collection']
+            if not 'id' in collection:
+                raise ValueError("collection: 'id' is required key if a collection-dictionary is given")
+            depth_all = False
+            if 'depth' in collection:
+                if collection['depth'] in ['members', 'all']:
+                    depth_all = collection['depth'] == 'all'
+                else:
+                    raise ValueError(
+                    "collection - 'depth': only the following values are allowed: 'members', 'all'")
+            children = self._get_children(collection['id'], depth_all)
 
         request = self.scheme_uri + "/c/"
-        res = requests.get(request, headers={'Accept': 'application/json'}, params={'ctype': type_c, 'label': label})#, 'collection': collection
-        res.encoding = 'utf-8'
-        result = res.json()
-        return result
+        response = self._request(request, {'Accept':'application/json'}, {'type': type_c, 'label': label})
+        if response.status_code == 404:
+            return False
+        if children:
+            return [r for r in response.json() if r['id'] in children]
+        else:
+            return response.json()
 
     def get_all(self):
         '''Returns all concepts and collections in this provider.
@@ -170,10 +178,10 @@ class AtramhasisProvider(VocabularyProvider):
                 language of the provider and finally falls back to `en`.
         '''
         request = self.scheme_uri + "/c/"
-        res = requests.get(request, headers={'Accept': 'application/json'})
-        res.encoding = 'utf-8'
-        result = res.json()
-        return result
+        response = self._request(request, {'Accept':'application/json'})
+        if response.status_code == 404:
+            return False
+        return response.json()
 
     def get_top_concepts(self):
         """  Returns all concepts that form the top-level of a display hierarchy.
@@ -181,20 +189,20 @@ class AtramhasisProvider(VocabularyProvider):
         :return: A :class:`lst` of concepts.
         """
         request = self.scheme_uri + "/topconcepts"
-        res = requests.get(request, headers={'Accept': 'application/json'})
-        res.encoding = 'utf-8'
-        result = res.json()
-        return result
+        response = self._request(request, {'Accept':'application/json'})
+        if response.status_code == 404:
+            return False
+        return response.json()
 
     def get_top_display(self):
         """  Returns all concepts or collections that form the top-level of a display hierarchy.
         :return: A :class:`lst` of concepts and collections.
         """
         request = self.scheme_uri + "/displaytop"
-        res = requests.get(request, headers={'Accept': 'application/json'})
-        res.encoding = 'utf-8'
-        result = res.json()
-        return result
+        response = self._request(request, {'Accept':'application/json'})
+        if response.status_code == 404:
+            return False
+        return response.json()
 
     def get_children_display(self, id):
         """ Return a list of concepts or collections that should be displayed under this concept or collection.
@@ -202,11 +210,11 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of concepts and collections.
         """
-        request = self.scheme_uri + "/displaychildren"
-        res = requests.get(request, headers={'Accept': 'application/json'})
-        res.encoding = 'utf-8'
-        result = res.json()
-        return result
+        request = self.scheme_uri  + "/c/" + str(id) + "/displaychildren"
+        response = self._request(request, {'Accept':'application/json'})
+        if response.status_code == 404:
+            return False
+        return response.json()
 
     def expand(self, id):
         """ Expand a concept or collection to all it's narrower concepts.
@@ -218,26 +226,33 @@ class AtramhasisProvider(VocabularyProvider):
         """
         expanded = []
         expanded.append(id)
-        expanded.extend(self._get_children(id, all=True))
-        if len(expanded) == 1:
-            if self.get_by_id(id) is False:
+        children = self._get_children(id, all=True)
+        if not children:
+            return False
+        expanded.extend(children)
+        if len(expanded) == 1 and not self.get_by_id(id):
                 return False
         return expanded
 
     def _get_children(self, id, all=False):
         #If all=True this method works recursive
         request = self.scheme_uri + "/c/" + str(id) + "/displaychildren"
-        res = requests.get(request, headers={'Accept': 'application/json'})
-        if res.status_code == 404:
-            return []
-        res.encoding = 'utf-8'
-        result = res.json()
+        response = self._request(request, {'Accept':'application/json'})
+        if response.status_code != 200:
+            return False
         answer = []
-        for r in result:
-            child_id = r['id']
-            answer.append(child_id)
-            if all is True:
-                child_list = self._get_children(child_id, all=True)
-                if child_list is not False:
+        for r in response.json():
+            answer.append(r['id'])
+            if all:
+                child_list = self._get_children(r['id'], all=True)
+                if child_list:
                     answer.extend(child_list)
         return answer
+
+    def _request(self, request, headers=None, params=None):
+        try:
+            res = requests.get(request, headers=headers, params=params)
+        except ConnectionError as e:
+            raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request))
+        res.encoding = 'utf-8'
+        return res
