@@ -258,5 +258,6 @@ class AtramhasisProvider(VocabularyProvider):
             res = requests.get(request, headers=headers, params=params)
         except ConnectionError as e:
             raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request,))
-        res.encoding = 'utf-8'
+        if not res.encoding:
+            res.encoding = 'utf-8'
         return res
