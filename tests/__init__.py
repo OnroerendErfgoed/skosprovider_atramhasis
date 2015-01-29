@@ -1,7 +1,6 @@
-import json
+
 import re
 import responses
-from skosprovider.skos import Concept
 
 
 def init_responses():

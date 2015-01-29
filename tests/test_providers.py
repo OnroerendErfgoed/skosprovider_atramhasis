@@ -10,7 +10,6 @@ import responses
 import requests
 from tests import init_responses
 
-
 class AtramhasisProviderTests(unittest.TestCase):
     # @classmethod
     # def setUpClass(cls):
