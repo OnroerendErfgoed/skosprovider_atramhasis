@@ -8,3 +8,4 @@ Sphinx==1.2.2
 tox
 pytest
 pytest-cov==1.7.0
+responses==0.3.0

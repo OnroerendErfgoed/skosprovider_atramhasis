@@ -156,7 +156,11 @@ class AtramhasisProvider(VocabularyProvider):
             children = self._get_children(collection['id'], depth_all)
 
         request = self.scheme_uri + "/c/"
-        response = self._request(request, {'Accept':'application/json'}, {'type': type_c, 'label': label})
+        params = dict()
+        params['type'] = type_c
+        if label:
+            params['label'] = label
+        response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
         if children:
@@ -210,7 +214,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of concepts and collections.
         """
-        request = self.scheme_uri  + "/c/" + str(id) + "/displaychildren"
+        request = self.scheme_uri + "/c/" + str(id) + "/displaychildren"
         response = self._request(request, {'Accept':'application/json'})
         if response.status_code == 404:
             return False
@@ -253,6 +257,6 @@ class AtramhasisProvider(VocabularyProvider):
         try:
             res = requests.get(request, headers=headers, params=params)
         except ConnectionError as e:
-            raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request))
+            raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request,))
         res.encoding = 'utf-8'
         return res
