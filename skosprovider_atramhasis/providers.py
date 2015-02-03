@@ -153,7 +153,11 @@ class AtramhasisProvider(VocabularyProvider):
                 else:
                     raise ValueError(
                     "collection - 'depth': only the following values are allowed: 'members', 'all'")
-            children = self._get_children(collection['id'], depth_all)
+            if depth_all:
+                children = self.expand(collection['id'])
+            else:
+                answer = self.get_children_display(collection['id'])
+                children = [a['id'] for a in answer]
 
         request = self.scheme_uri + "/c/"
         params = dict()
@@ -228,30 +232,12 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of id's. Returns false if the input id does not exists
         """
-        expanded = []
-        expanded.append(id)
-        children = self._get_children(id, all=True)
-        if not children:
-            return False
-        expanded.extend(children)
-        if len(expanded) == 1 and not self.get_by_id(id):
-                return False
-        return expanded
-
-    def _get_children(self, id, all=False):
-        #If all=True this method works recursive
-        request = self.scheme_uri + "/c/" + str(id) + "/displaychildren"
+        request = self.scheme_uri + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept':'application/json'})
         if response.status_code != 200:
             return False
-        answer = []
-        for r in response.json():
-            answer.append(r['id'])
-            if all:
-                child_list = self._get_children(r['id'], all=True)
-                if child_list:
-                    answer.extend(child_list)
-        return answer
+        return response.json()
+
 
     def _request(self, request, headers=None, params=None):
         try:

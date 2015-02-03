@@ -36,7 +36,7 @@ general provider for the Atramhasis vocabularies. It's use is identical to
 all other SKOSProviders. A scheme_uri is required to indicate the vocabulary
 to be used. Please consult :ref:`supported_thesauri` for a complete list.
 
-.. literalinclude:: ../../examples/period.py
+.. literalinclude:: ../../examples/traditioneel.py
    :language: python
 
 

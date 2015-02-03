@@ -94,8 +94,6 @@ class AtramhasisProviderTests(unittest.TestCase):
             self.assertIn(key, keys_first_display)
         self.assertIn("aluminium", [label['label'] for label in childeren_atramhasis])
 
-
-
     @responses.activate
     def test_find_with_collection_all(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS').find({'type': 'concept', 'collection': {'id': '0', 'depth': 'all'}})
