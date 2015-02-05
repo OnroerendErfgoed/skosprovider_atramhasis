@@ -37,14 +37,10 @@ class AtramhasisProvider(VocabularyProvider):
             self.base_scheme_uri = _split_uri(kwargs['scheme_uri'], 0)
             self.scheme_id = _split_uri(kwargs['scheme_uri'], 1)
         else:
-            self.base_scheme_uri = 'http://localhost:6543/conceptschemes'
-            self.scheme_id = 'STYLES'
+            raise ValueError("Please provide a scheme_uri for the provider")
         self.scheme_uri = self.base_scheme_uri + "/" + self.scheme_id
         concept_scheme = ConceptScheme(self.scheme_uri)
         super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
-
-    def _get_language(self, **kwargs):
-        return self.metadata['default_language']
 
     def get_by_id(self, id):
         """ Get a :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection` by id
@@ -70,7 +66,7 @@ class AtramhasisProvider(VocabularyProvider):
         id = _split_uri(uri, 1)
         return self.get_by_id(id)
 
-    def find(self, query):
+    def find(self, query, **kwargs):
         '''Find concepts that match a certain query.
 
         Currently query is expected to be a dict, so that complex queries can
@@ -155,6 +151,8 @@ class AtramhasisProvider(VocabularyProvider):
                     "collection - 'depth': only the following values are allowed: 'members', 'all'")
             if depth_all:
                 children = self.expand(collection['id'])
+                if not children:
+                    return False
             else:
                 answer = self.get_children_display(collection['id'])
                 children = [a['id'] for a in answer]
@@ -164,6 +162,7 @@ class AtramhasisProvider(VocabularyProvider):
         params['type'] = type_c
         if label:
             params['label'] = label
+        params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -172,7 +171,7 @@ class AtramhasisProvider(VocabularyProvider):
         else:
             return response.json()
 
-    def get_all(self):
+    def get_all(self, **kwargs):
         '''Returns all concepts and collections in this provider.
 
         :returns: A :class:`lst` of concepts and collections. Each of these is a dict
@@ -186,40 +185,48 @@ class AtramhasisProvider(VocabularyProvider):
                 language of the provider and finally falls back to `en`.
         '''
         request = self.scheme_uri + "/c/"
-        response = self._request(request, {'Accept':'application/json'})
+        params = dict()
+        params['language'] = self._get_language(**kwargs)
+        response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
 
-    def get_top_concepts(self):
+    def get_top_concepts(self, **kwargs):
         """  Returns all concepts that form the top-level of a display hierarchy.
 
         :return: A :class:`lst` of concepts.
         """
         request = self.scheme_uri + "/topconcepts"
-        response = self._request(request, {'Accept':'application/json'})
+        params = dict()
+        params['language'] = self._get_language(**kwargs)
+        response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
 
-    def get_top_display(self):
+    def get_top_display(self, **kwargs):
         """  Returns all concepts or collections that form the top-level of a display hierarchy.
         :return: A :class:`lst` of concepts and collections.
         """
         request = self.scheme_uri + "/displaytop"
-        response = self._request(request, {'Accept':'application/json'})
+        params = dict()
+        params['language'] = self._get_language(**kwargs)
+        response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
 
-    def get_children_display(self, id):
+    def get_children_display(self, id, **kwargs):
         """ Return a list of concepts or collections that should be displayed under this concept or collection.
 
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of concepts and collections.
         """
         request = self.scheme_uri + "/c/" + str(id) + "/displaychildren"
-        response = self._request(request, {'Accept':'application/json'})
+        params = dict()
+        params['language'] = self._get_language(**kwargs)
+        response = self._request(request, {'Accept':'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()

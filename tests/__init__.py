@@ -25,13 +25,13 @@ def init_responses():
     status=404,
     content_type='application/json; charset=UTF-8')
 
-    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=concept&label=mod',
+    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=concept&label=mod&language=en',
     match_querystring=True,
     body='[{"label": "modernisme", "type": "concept", "id": 23, "uri": "urn:x-vioe:styles:23"}, {"label": "postmodernisme", "type": "concept", "id": 26, "uri": "urn:x-vioe:styles:26"}]',
     status=200,
     content_type='application/json; charset=UTF-8')
 
-    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection',
+    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en',
     match_querystring=True,
     body='[{"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}]',
     status=200,
@@ -126,6 +126,48 @@ def init_responses():
     responses.add(responses.GET, url_re,
               body='[]', status=200,
               content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/2',
+    body='{"subordinate_arrays": [], "matches": {"related": ["http://id.python.org/different/types/of/trees/nr/17/the/other/chestnut"]}, "labels": [{"type": "prefLabel", "language": "en", "label": "The Chestnut"}, {"type": "altLabel", "language": "nl", "label": "De Paardekastanje"}, {"type": "altLabel", "language": "fr", "label": "la ch\u00e2taigne"}], "narrower": [], "related": [], "broader": [], "id": 2, "member_of": [{"labels": [{"type": "prefLabel", "language": "en", "label": "Trees by species"}, {"type": "prefLabel", "language": "nl", "label": "Bomen per soort"}], "label": "Bomen per soort", "type": "collection", "id": 3, "uri": "urn:x-skosprovider:trees/3"}], "notes": [{"note": "A different type of tree.", "type": "definition", "language": "en"}], "uri": "urn:x-skosprovider:trees/2", "label": "The Chestnut", "type": "concept"}',
+    status=200,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/100/expand',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/c/100/displaychildren',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/c/',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/topconcepts',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/displaytop',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/no_encoding',
+    body='no encoding',
+    status=404,
+    content_type='application/json')
+
+
+
+
+
+
 
 
 

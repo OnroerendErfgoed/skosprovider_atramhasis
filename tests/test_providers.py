@@ -19,11 +19,14 @@ class AtramhasisProviderTests(unittest.TestCase):
     def setUp(self):
         init_responses()
 
-    @responses.activate
+
     def test_default_provider(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
         self.assertEqual(provider.base_scheme_uri, 'http://localhost/conceptschemes')
         self.assertEqual(provider.scheme_id, 'STYLES')
+
+    def test_default_provider_no_scheme_uri(self):
+        self.assertRaises(ValueError, AtramhasisProvider, {'id': 'Atramhasis'})
 
     @responses.activate
     def test_scheme_uri_not_available(self):
@@ -50,6 +53,21 @@ class AtramhasisProviderTests(unittest.TestCase):
         for label in preflabels:
             self.assertIn(label, preflabels_conc)
 
+    @responses.activate
+    def test_get_by_id_concept_matches(self):
+        concept = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/TREES').get_by_id('2')
+        concept = concept.__dict__
+        self.assertEqual(concept['uri'], 'urn:x-skosprovider:trees/2')
+        self.assertEqual(concept['type'], 'concept')
+        self.assertIsInstance(concept['labels'], list)
+
+        preflabels = [{'en': 'The Chestnut'}]
+        preflabels_conc = [{label['language']: label['label']} for label in concept['labels']
+                           if label['type'] == 'prefLabel']
+        self.assertGreater(len(preflabels_conc), 0)
+        for label in preflabels:
+            self.assertIn(label, preflabels_conc)
+
 
     @responses.activate
     def test_get_by_id_nonexistant_id(self):
@@ -67,6 +85,18 @@ class AtramhasisProviderTests(unittest.TestCase):
     def test_get_all(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
         self.assertEqual(len(provider.get_all()), 71)
+
+    @responses.activate
+    def test_unknown_concept_scheme(self):
+        provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/ONBEKEND')
+        r = provider.get_all()
+        self.assertFalse(r)
+        r = provider.get_top_concepts()
+        self.assertFalse(r)
+        r = provider.get_children_display("100")
+        self.assertFalse(r)
+        r = provider.get_top_display()
+        self.assertFalse(r)
 
     @responses.activate
     def test_get_top_display(self):
@@ -95,6 +125,13 @@ class AtramhasisProviderTests(unittest.TestCase):
         self.assertIn("aluminium", [label['label'] for label in childeren_atramhasis])
 
     @responses.activate
+    def test_find_404(self):
+        r = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/TREES').find({'type': 'concept', 'collection': {'id': '100', 'depth': 'all'}})
+        self.assertFalse(r)
+        r = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/ONBEKEND').find({'type': 'concept'})
+        self.assertFalse(r)
+
+    @responses.activate
     def test_find_with_collection_all(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS').find({'type': 'concept', 'collection': {'id': '0', 'depth': 'all'}})
         self.assertIsInstance(r, list)
@@ -107,6 +144,13 @@ class AtramhasisProviderTests(unittest.TestCase):
             self.assertEqual(res['type'], 'concept')
 
     @responses.activate
+    def test_find_with_collection_invalid_params(self):
+        provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS')
+        self.assertRaises(ValueError, provider.find, {'type': 'concept', 'collection': {'id': '0', 'depth': 'very deep'}})
+        self.assertRaises(ValueError, provider.find, {'type': 'concept', 'collection': {'depth': 'all'}})
+
+
+    @responses.activate
     def test_find_with_collection_members(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS').find({'type': 'concept', 'collection': {'id': '0', 'depth': 'members'}})
         self.assertIsInstance(r, list)
@@ -117,7 +161,6 @@ class AtramhasisProviderTests(unittest.TestCase):
         self.assertIn("ijzer", [label['label'] for label in r])
         for res in r:
             self.assertEqual(res['type'], 'concept')
-
 
     @responses.activate
     def test_find_collections(self):
@@ -134,7 +177,6 @@ class AtramhasisProviderTests(unittest.TestCase):
         self.assertGreater(len(r), 0)
         for res in r:
             self.assertIn(res['type'], ['collection','concept'])
-
 
     @responses.activate
     def test_find_wrong_type(self):
@@ -167,3 +209,9 @@ class AtramhasisProviderTests(unittest.TestCase):
     def test_expand_invalid(self):
         all_childeren_invalid = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES').expand('invalid')
         self.assertFalse(all_childeren_invalid)
+
+    @responses.activate
+    def test_request_encoding(self):
+        provider =  AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
+        response = provider._request("http://localhost/no_encoding")
+        self.assertEqual(response.encoding, "utf-8")
