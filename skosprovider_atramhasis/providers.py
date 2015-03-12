@@ -10,7 +10,7 @@ from requests.exceptions import ConnectionError
 import warnings
 import logging
 from skosprovider.skos import ConceptScheme
-from skosprovider_atramhasis.utils import _get_id_from_uri, dict_to_thing
+from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ class AtramhasisProvider(VocabularyProvider):
 
         :param (str) id: integer id of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
-            Returns None if non-existing id
         """
         request = self.scheme_uri + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
@@ -59,10 +58,15 @@ class AtramhasisProvider(VocabularyProvider):
 
         :param (str) uri: string uri of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
-            Returns None if non-existing id
         """
-        id = _get_id_from_uri(uri)
-        return self.get_by_id(id)
+        request = self.scheme_uri + "/uris/" + uri
+        response = self._request(request, {'Accept': 'application/json'})
+        if response.status_code == 404:
+            return False
+        # if response.json()['concept_scheme']['id'] != self.concept_scheme.id:
+        #     #todo: raise exception or return False?
+        #     return False
+        return self.get_by_id(response.json()['id'])
 
     def find(self, query, **kwargs):
         '''Find concepts that match a certain query.
