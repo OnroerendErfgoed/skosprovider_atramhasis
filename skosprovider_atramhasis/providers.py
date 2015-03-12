@@ -17,6 +17,9 @@ log = logging.getLogger(__name__)
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
 
+
+
+
 class AtramhasisProvider(VocabularyProvider):
     """A provider that can work with the Atramhasis REST services (based on pyramid_skosprovider)
     """
@@ -41,7 +44,7 @@ class AtramhasisProvider(VocabularyProvider):
         else:
             raise ValueError("Please provide a scheme_id for the provider")
 
-        concept_scheme = ConceptScheme(self.base_url + '/conceptschemes/' + self.scheme_id)
+        concept_scheme = self._get_concept_scheme()
         super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
 
     def get_by_id(self, id):
@@ -50,7 +53,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param (str) id: integer id of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
         """
-        request = self.concept_scheme.uri + "/c/" + str(id)
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False
@@ -63,7 +66,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param (str) uri: string uri of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
         """
-        request = self.concept_scheme.uri + "/uris/" + uri
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/uris/" + uri
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False
@@ -163,7 +166,7 @@ class AtramhasisProvider(VocabularyProvider):
                 answer = self.get_children_display(collection['id'])
                 children = [a['id'] for a in answer]
 
-        request = self.concept_scheme.uri + "/c/"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['type'] = type_c
         if label:
@@ -190,7 +193,7 @@ class AtramhasisProvider(VocabularyProvider):
                 determined by looking at the `**kwargs` parameter, the default \
                 language of the provider and finally falls back to `en`.
         '''
-        request = self.concept_scheme.uri + "/c/"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -203,7 +206,7 @@ class AtramhasisProvider(VocabularyProvider):
 
         :return: A :class:`lst` of concepts.
         """
-        request = self.concept_scheme.uri + "/topconcepts"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -215,7 +218,7 @@ class AtramhasisProvider(VocabularyProvider):
         """  Returns all concepts or collections that form the top-level of a display hierarchy.
         :return: A :class:`lst` of concepts and collections.
         """
-        request = self.concept_scheme.uri + "/displaytop"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -229,7 +232,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of concepts and collections.
         """
-        request = self.concept_scheme.uri + "/c/" + str(id) + "/displaychildren"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -245,7 +248,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of id's. Returns false if the input id does not exists
         """
-        request = self.concept_scheme.uri + "/c/" + str(id) + "/expand"
+        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept':'application/json'})
         if response.status_code != 200:
             return False
@@ -260,3 +263,11 @@ class AtramhasisProvider(VocabularyProvider):
         if not res.encoding:
             res.encoding = 'utf-8'
         return res
+
+    def _get_concept_scheme(self):
+        request = self.base_url +'/conceptschemes/' + self.scheme_id
+        response = self._request(request, {'Accept':'application/json'}, dict())
+        if response.status_code == 404:
+            #todo specify the exception
+            raise Exception ("Conceptscheme not found")
+        return ConceptScheme(response.json()['uri'])

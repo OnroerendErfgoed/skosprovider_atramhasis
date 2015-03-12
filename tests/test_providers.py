@@ -24,8 +24,7 @@ class AtramhasisProviderTests(unittest.TestCase):
 
     @responses.activate
     def test_base_url_not_available(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://not_available',  scheme_id='STYLES')
-        self.assertRaises(ProviderUnavailableException, provider.get_by_id, 1)
+        self.assertRaises(ProviderUnavailableException, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://not_available',  scheme_id='STYLES')
 
     @responses.activate
     def test_get_top_concepts_provider(self):
@@ -82,15 +81,7 @@ class AtramhasisProviderTests(unittest.TestCase):
 
     @responses.activate
     def test_unknown_concept_scheme(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='ONBEKEND')
-        r = provider.get_all()
-        self.assertFalse(r)
-        r = provider.get_top_concepts()
-        self.assertFalse(r)
-        r = provider.get_children_display("100")
-        self.assertFalse(r)
-        r = provider.get_top_display()
-        self.assertFalse(r)
+        self.assertRaises(ProviderUnavailableException, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='ONBEKEND')
 
     @responses.activate
     def test_get_top_display(self):
@@ -122,8 +113,7 @@ class AtramhasisProviderTests(unittest.TestCase):
     def test_find_404(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='TREES').find({'type': 'concept', 'collection': {'id': '100', 'depth': 'all'}})
         self.assertFalse(r)
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='ONBEKEND').find({'type': 'concept'})
-        self.assertFalse(r)
+        self.assertRaises(ProviderUnavailableException, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='ONBEKEND')
 
     @responses.activate
     def test_find_with_collection_all(self):
