@@ -80,10 +80,6 @@ class AtramhasisProviderTests(unittest.TestCase):
         self.assertEqual(len(provider.get_all()), 71)
 
     @responses.activate
-    def test_unknown_concept_scheme(self):
-        self.assertRaises(ProviderUnavailableException, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='ONBEKEND')
-
-    @responses.activate
     def test_get_top_display(self):
         top_atramhasis_display = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='STYLES').get_top_display()
         self.assertIsInstance(top_atramhasis_display, list)
@@ -113,7 +109,7 @@ class AtramhasisProviderTests(unittest.TestCase):
     def test_find_404(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='TREES').find({'type': 'concept', 'collection': {'id': '100', 'depth': 'all'}})
         self.assertFalse(r)
-        self.assertRaises(ProviderUnavailableException, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='ONBEKEND')
+        self.assertRaises(Exception, AtramhasisProvider,{'id': 'Atramhasis'}, base_url='http://localhost',  scheme_id='ONBEKEND')
 
     @responses.activate
     def test_find_with_collection_all(self):

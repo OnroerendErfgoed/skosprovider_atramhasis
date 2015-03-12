@@ -142,6 +142,10 @@ def init_responses():
     status=404,
     content_type='application/json; charset=UTF-8')
 
+    responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/c/',
     body='{"message": "The resource could not be found."}',
