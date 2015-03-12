@@ -26,18 +26,22 @@ class AtramhasisProvider(VocabularyProvider):
 
         :param (dict) metadata: metadata of the provider
         :param kwargs: arguments defining the provider.
-            * Typical argument is `scheme_uri`.
-                The `scheme_uri` is a composition of the `base_scheme_uri` and `scheme_id`
+            * Typical argument is `base_url`, `scheme_id`
             * The :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
                 is the default :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
         """
         if not 'default_language' in metadata:
             metadata['default_language'] = 'en'
-        if 'scheme_uri' in kwargs:
-            self.scheme_uri = kwargs['scheme_uri']
+        if 'base_url' in kwargs:
+            self.base_url = kwargs['base_url']
         else:
-            raise ValueError("Please provide a scheme_uri for the provider")
-        concept_scheme = ConceptScheme(self.scheme_uri)
+            raise ValueError("Please provide a base_url for the provider")
+        if 'scheme_id' in kwargs:
+            self.scheme_id = kwargs['scheme_id']
+        else:
+            raise ValueError("Please provide a scheme_id for the provider")
+
+        concept_scheme = ConceptScheme(self.base_url + '/conceptschemes/' + self.scheme_id)
         super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
 
     def get_by_id(self, id):
@@ -46,7 +50,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param (str) id: integer id of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
         """
-        request = self.scheme_uri + "/c/" + str(id)
+        request = self.concept_scheme.uri + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False
@@ -59,13 +63,13 @@ class AtramhasisProvider(VocabularyProvider):
         :param (str) uri: string uri of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
         """
-        request = self.scheme_uri + "/uris/" + uri
+        request = self.concept_scheme.uri + "/uris/" + uri
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False
-        # if response.json()['concept_scheme']['id'] != self.concept_scheme.id:
-        #     #todo: raise exception or return False?
-        #     return False
+        if response.json()['concept_scheme']['id'] != self.scheme_id:
+            #todo: raise exception or return False?
+            return False
         return self.get_by_id(response.json()['id'])
 
     def find(self, query, **kwargs):
@@ -159,7 +163,7 @@ class AtramhasisProvider(VocabularyProvider):
                 answer = self.get_children_display(collection['id'])
                 children = [a['id'] for a in answer]
 
-        request = self.scheme_uri + "/c/"
+        request = self.concept_scheme.uri + "/c/"
         params = dict()
         params['type'] = type_c
         if label:
@@ -186,7 +190,7 @@ class AtramhasisProvider(VocabularyProvider):
                 determined by looking at the `**kwargs` parameter, the default \
                 language of the provider and finally falls back to `en`.
         '''
-        request = self.scheme_uri + "/c/"
+        request = self.concept_scheme.uri + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -199,7 +203,7 @@ class AtramhasisProvider(VocabularyProvider):
 
         :return: A :class:`lst` of concepts.
         """
-        request = self.scheme_uri + "/topconcepts"
+        request = self.concept_scheme.uri + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -211,7 +215,7 @@ class AtramhasisProvider(VocabularyProvider):
         """  Returns all concepts or collections that form the top-level of a display hierarchy.
         :return: A :class:`lst` of concepts and collections.
         """
-        request = self.scheme_uri + "/displaytop"
+        request = self.concept_scheme.uri + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -225,7 +229,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of concepts and collections.
         """
-        request = self.scheme_uri + "/c/" + str(id) + "/displaychildren"
+        request = self.concept_scheme.uri + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
         response = self._request(request, {'Accept':'application/json'}, params)
@@ -241,7 +245,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param str id: A concept or collection id.
         :returns: A :class:`lst` of id's. Returns false if the input id does not exists
         """
-        request = self.scheme_uri + "/c/" + str(id) + "/expand"
+        request = self.concept_scheme.uri + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept':'application/json'})
         if response.status_code != 200:
             return False
