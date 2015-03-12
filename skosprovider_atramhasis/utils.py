@@ -22,8 +22,9 @@ else:  # pragma: no cover
     binary_type = str
 
 
-def _split_uri(uri, index):
-    return uri.strip('/').rsplit('/', 1)[index]
+def _get_id_from_uri(uri):
+    #todo
+    return 1
 
 
 def text_(s, encoding='latin-1', errors='strict'):

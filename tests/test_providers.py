@@ -19,12 +19,6 @@ class AtramhasisProviderTests(unittest.TestCase):
     def setUp(self):
         init_responses()
 
-
-    def test_default_provider(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
-        self.assertEqual(provider.base_scheme_uri, 'http://localhost/conceptschemes')
-        self.assertEqual(provider.scheme_id, 'STYLES')
-
     def test_default_provider_no_scheme_uri(self):
         self.assertRaises(ValueError, AtramhasisProvider, {'id': 'Atramhasis'})
 

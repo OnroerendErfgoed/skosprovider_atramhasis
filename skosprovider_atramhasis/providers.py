@@ -10,7 +10,7 @@ from requests.exceptions import ConnectionError
 import warnings
 import logging
 from skosprovider.skos import ConceptScheme
-from skosprovider_atramhasis.utils import _split_uri, dict_to_thing
+from skosprovider_atramhasis.utils import _get_id_from_uri, dict_to_thing
 
 log = logging.getLogger(__name__)
 
@@ -34,11 +34,9 @@ class AtramhasisProvider(VocabularyProvider):
         if not 'default_language' in metadata:
             metadata['default_language'] = 'en'
         if 'scheme_uri' in kwargs:
-            self.base_scheme_uri = _split_uri(kwargs['scheme_uri'], 0)
-            self.scheme_id = _split_uri(kwargs['scheme_uri'], 1)
+            self.scheme_uri = kwargs['scheme_uri']
         else:
             raise ValueError("Please provide a scheme_uri for the provider")
-        self.scheme_uri = self.base_scheme_uri + "/" + self.scheme_id
         concept_scheme = ConceptScheme(self.scheme_uri)
         super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
 
@@ -63,7 +61,7 @@ class AtramhasisProvider(VocabularyProvider):
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
             Returns None if non-existing id
         """
-        id = _split_uri(uri, 1)
+        id = _get_id_from_uri(uri)
         return self.get_by_id(id)
 
     def find(self, query, **kwargs):
