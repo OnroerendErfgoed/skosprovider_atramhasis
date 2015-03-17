@@ -69,7 +69,6 @@ class AtramhasisProvider(VocabularyProvider):
         if response.status_code == 404:
             return False
         if response.json()['concept_scheme']['id'] != self.scheme_id:
-            # todo: raise exception or return False?
             return False
         return self.get_by_id(response.json()['id'])
 
