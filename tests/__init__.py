@@ -167,7 +167,7 @@ def init_responses():
     status=404,
     content_type='application/json')
 
-    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/uris/http://localhost/conceptschemes/STYLES/c/1',
+    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1',
     body='{"id": 1,"type": "concept","concept_scheme": {"id": "STYLES", "uri": "http://localhost/conceptschemes/STYLES"},"uri": "http://localhost/conceptschemes/STYLES/c/1"}',
     status=200,
     content_type='application/json')

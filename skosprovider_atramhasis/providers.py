@@ -64,7 +64,7 @@ class AtramhasisProvider(VocabularyProvider):
         :param (str) uri: string uri of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
         :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
         """
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/uris/" + uri
+        request = self.base_url + "/uris/" + uri
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False

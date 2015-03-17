@@ -11,9 +11,8 @@ from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses
 
 
-@responses.activate
 def main():
-    provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
+    provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://glacial-bastion-1106.herokuapp.com', scheme_id='TREES')
 
     result = provider.get_by_id(1)
 
