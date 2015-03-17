@@ -27,16 +27,19 @@ depends on.
 
 Using the providers
 ===================
+For demonstration purposes of :class:`~skosprovider_atramhasis.providers.AtramhasisProvider`,
+the following examples use the atramhasis-demo on 'http://glacial-bastion-1106.herokuapp.com'.
+You can adapt the examples with your own instance of Atramhasis, by changing the 'base_url' and 'scheme_id'.
 
 Using AtramhasisProvider
 --------------------------
 
 The :class:`~skosprovider_atramhasis.providers.AtramhasisProvider` is a
 general provider for the Atramhasis vocabularies. It's use is identical to
-all other SKOSProviders. A scheme_uri is required to indicate the vocabulary
+all other SKOSProviders. A base_url of the Atramhasis instance and a scheme_id are required to indicate the vocabulary
 to be used. Please consult :ref:`supported_thesauri` for a complete list.
 
-.. literalinclude:: ../../examples/traditioneel.py
+.. literalinclude:: ../../examples/provider.py
    :language: python
 
 
