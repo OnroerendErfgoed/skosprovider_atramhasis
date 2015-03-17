@@ -9,15 +9,13 @@ from requests.exceptions import ConnectionError
 
 import warnings
 import logging
-from skosprovider.skos import ConceptScheme
+from skosprovider.skos import ConceptScheme, Label, Note
 from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
 
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
-
-
 
 
 class AtramhasisProvider(VocabularyProvider):
@@ -71,7 +69,7 @@ class AtramhasisProvider(VocabularyProvider):
         if response.status_code == 404:
             return False
         if response.json()['concept_scheme']['id'] != self.scheme_id:
-            #todo: raise exception or return False?
+            # todo: raise exception or return False?
             return False
         return self.get_by_id(response.json()['id'])
 
@@ -145,7 +143,7 @@ class AtramhasisProvider(VocabularyProvider):
         if type_c not in ('all', 'concept', 'collection'):
             raise ValueError("type: only the following values are allowed: 'all', 'concept', 'collection'")
 
-        #Collection to search in (optional)
+        # Collection to search in (optional)
         children = False
         if 'collection' in query:
             collection = query['collection']
@@ -157,7 +155,7 @@ class AtramhasisProvider(VocabularyProvider):
                     depth_all = collection['depth'] == 'all'
                 else:
                     raise ValueError(
-                    "collection - 'depth': only the following values are allowed: 'members', 'all'")
+                        "collection - 'depth': only the following values are allowed: 'members', 'all'")
             if depth_all:
                 children = self.expand(collection['id'])
                 if not children:
@@ -172,7 +170,7 @@ class AtramhasisProvider(VocabularyProvider):
         if label:
             params['label'] = label
         params['language'] = self._get_language(**kwargs)
-        response = self._request(request, {'Accept':'application/json'}, params)
+        response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
         if children:
@@ -196,7 +194,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
-        response = self._request(request, {'Accept':'application/json'}, params)
+        response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
@@ -209,7 +207,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
-        response = self._request(request, {'Accept':'application/json'}, params)
+        response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
@@ -221,7 +219,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
-        response = self._request(request, {'Accept':'application/json'}, params)
+        response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
@@ -235,7 +233,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
-        response = self._request(request, {'Accept':'application/json'}, params)
+        response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
         return response.json()
@@ -249,7 +247,7 @@ class AtramhasisProvider(VocabularyProvider):
         :returns: A :class:`lst` of id's. Returns false if the input id does not exists
         """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
-        response = self._request(request, {'Accept':'application/json'})
+        response = self._request(request, {'Accept': 'application/json'})
         if response.status_code != 200:
             return False
         return response.json()
@@ -265,9 +263,22 @@ class AtramhasisProvider(VocabularyProvider):
         return res
 
     def _get_concept_scheme(self):
-        request = self.base_url +'/conceptschemes/' + self.scheme_id
-        response = self._request(request, {'Accept':'application/json'}, dict())
+        request = self.base_url + '/conceptschemes/' + self.scheme_id
+        response = self._request(request, {'Accept': 'application/json'}, dict())
         if response.status_code == 404:
-            #todo specify the exception
-            raise Exception ("Conceptscheme not found")
-        return ConceptScheme(response.json()['uri'])
+            raise Exception("Conceptscheme not found for scheme_id: %s" % self.scheme_id)
+        return ConceptScheme(
+            response.json()['uri'],
+            labels=[
+                Label(l['label'] if 'label' in l.keys() else '<no label>',
+                      l['type'] if 'type' in l.keys() else 'prefLabel',
+                      l['language'] if 'language' in l.keys() else 'und')
+                for l in response.json()['labels']
+            ],
+            notes=[
+                Note(n['note'] if 'note' in n.keys() else '<no note>',
+                     n['type'] if 'type' in n.keys() else 'note',
+                     n['language'] if 'language' in n.keys() else 'und')
+                for n in response.json()['notes']
+            ]
+        )
