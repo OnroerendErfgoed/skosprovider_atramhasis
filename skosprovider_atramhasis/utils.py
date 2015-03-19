@@ -5,8 +5,6 @@ Utility functions for :mod:`skosprovider_atramhasis`.
 
 from skosprovider.skos import (
     Concept,
-    Label,
-    Note,
     ConceptScheme, Collection, dict_to_label, dict_to_note)
 
 import logging

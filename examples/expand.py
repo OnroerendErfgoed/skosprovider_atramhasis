@@ -3,7 +3,6 @@
 '''
 This script demonstrates using the AtramhasisProvider to expand a concept
 '''
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses

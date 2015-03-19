@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 '''
 This script demonstrates using the AtramhasisProvider to get the concept of
-'STYLE-traditioneel'.
+'TREES-The Larch'.
 '''
-
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses

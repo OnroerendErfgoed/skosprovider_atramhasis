@@ -53,6 +53,11 @@ def init_responses():
     status=200,
     content_type='application/json; charset=UTF-8')
 
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/topconcepts',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
 
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/MATERIALS/c/',
@@ -84,6 +89,11 @@ def init_responses():
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/MATERIALS/c/0/expand',
     body='[1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 48, 49, 50]',
+    status=200,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/3/expand',
+    body='[1, 2]',
     status=200,
     content_type='application/json; charset=UTF-8')
 
@@ -152,12 +162,27 @@ def init_responses():
     status=404,
     content_type='application/json; charset=UTF-8')
 
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
     responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/topconcepts',
     body='{"message": "The resource could not be found."}',
     status=404,
     content_type='application/json; charset=UTF-8')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/ONBEKEND/displaytop',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/displaytop',
+    body='{"message": "The resource could not be found."}',
+    status=404,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/3/displaychildren',
     body='{"message": "The resource could not be found."}',
     status=404,
     content_type='application/json; charset=UTF-8')
@@ -170,6 +195,16 @@ def init_responses():
     responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1',
     body='{"id": 1,"type": "concept","concept_scheme": {"id": "STYLES", "uri": "http://localhost/conceptschemes/STYLES"},"uri": "http://localhost/conceptschemes/STYLES/c/1"}',
     status=200,
+    content_type='application/json')
+
+    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1234',
+    body='{"id": 1,"type": "concept","concept_scheme": {"id": "STIJLEN", "uri": "http://localhost/conceptschemes/STIJLEN"},"uri": "http://localhost/conceptschemes/STYLES/c/1234"}',
+    status=200,
+    content_type='application/json')
+
+    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1234567',
+    body='{"message": "The resource could not be found."}',
+    status=404,
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',

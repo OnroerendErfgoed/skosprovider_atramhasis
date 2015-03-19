@@ -1,10 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
-This script demonstrates using the AtramhasisProvider to find the concepts with 'iron' in their label
+This script demonstrates using the AtramhasisProvider to find the concepts with 'Lar' in their label
 '''
-
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses

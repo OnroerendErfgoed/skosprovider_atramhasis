@@ -14,13 +14,11 @@ packages = [
 
 requires = [
     'skosprovider>=0.5.0',
-    'requests',
-    'rdflib'
+    'requests'
 ]
-
 setup(
     name='skosprovider_atramhasis',
-    version='0.0.0',
+    version='0.1.0',
     description='Skosprovider implementation of Atramhasis internal Vocabularies',
     long_description=README,
     packages=packages,

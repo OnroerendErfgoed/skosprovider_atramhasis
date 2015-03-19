@@ -7,7 +7,6 @@ for Atramhasis
 import requests
 from requests.exceptions import ConnectionError
 
-import warnings
 import logging
 from skosprovider.skos import ConceptScheme, Label, Note
 from skosprovider_atramhasis.utils import dict_to_thing

@@ -4,7 +4,8 @@ Introduction
 ============
 
 This library offers an implementation of the 
-:class:`skosprovider.providers.VocabularyProvider` interface based on ...
+:class:`skosprovider.providers.VocabularyProvider` interface based on a provided
+`Atramhasis SKOS editor <http://atramhasis.readthedocs.org/en/latest>`_ and a conceptscheme served by this Atramhasis instance.
 
 Installation
 ------------
@@ -28,7 +29,7 @@ depends on.
 Using the providers
 ===================
 For demonstration purposes of :class:`~skosprovider_atramhasis.providers.AtramhasisProvider`,
-the following examples use the atramhasis-demo on 'http://glacial-bastion-1106.herokuapp.com'.
+the following examples use the Atramhasis-demo on 'http://glacial-bastion-1106.herokuapp.com'.
 You can adapt the examples with your own instance of Atramhasis, by changing the 'base_url' and 'scheme_id'.
 
 Using AtramhasisProvider
