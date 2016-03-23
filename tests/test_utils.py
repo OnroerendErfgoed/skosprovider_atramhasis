@@ -49,6 +49,6 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(collection.uri, self.collection['uri'])
 
     def test_dict_to_thing_invalid(self):
-        self.assertRaises(ValueError, dict_to_thing,self.concept_no_id)
-        self.assertRaises(ValueError, dict_to_thing,self.concept_no_type)
-        self.assertRaises(ValueError, dict_to_thing,self.concept_invalid_type)
+        self.assertRaises(ValueError, dict_to_thing, self.concept_no_id)
+        self.assertRaises(ValueError, dict_to_thing, self.concept_no_type)
+        self.assertRaises(ValueError, dict_to_thing, self.concept_invalid_type)

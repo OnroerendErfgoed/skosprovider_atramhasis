@@ -3,17 +3,17 @@
 '''
 This script demonstrates using the AtramhasisProvider to expand a concept
 '''
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses
 
 
-@responses.activate
 def main():
-    provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS')
+    #you can adapt this example by using the base_url of another atramhasis-instance and provide an available scheme_id and the id within this concept scheme to expand
+    provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://glacial-bastion-1106.herokuapp.com', scheme_id='TREES')
+    id = 3
 
-    results = provider.expand(8)
+    results = provider.expand(id)
 
     print('Results')
     print('------')

@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 '''
 This script demonstrates using the AtramhasisProvider to get the concept of
-'STYLE-traditioneel'.
+'TREES-The Larch'.
 '''
-
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses
 
 
-@responses.activate
 def main():
-    provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/STYLES')
+    #you can adapt this example by using the base_url of another atramhasis-instance and provide an available scheme_id and id within this conceptscheme
+    provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://glacial-bastion-1106.herokuapp.com', scheme_id='TREES')
+    id = 1
 
-    result = provider.get_by_id(1)
+    result = provider.get_by_id(id)
 
 
     print('Labels')

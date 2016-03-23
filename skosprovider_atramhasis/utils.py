@@ -5,8 +5,6 @@ Utility functions for :mod:`skosprovider_atramhasis`.
 
 from skosprovider.skos import (
     Concept,
-    Label,
-    Note,
     ConceptScheme, Collection, dict_to_label, dict_to_note)
 
 import logging
@@ -20,10 +18,6 @@ if PY3:  # pragma: no cover
     binary_type = bytes
 else:  # pragma: no cover
     binary_type = str
-
-
-def _split_uri(uri, index):
-    return uri.strip('/').rsplit('/', 1)[index]
 
 
 def text_(s, encoding='latin-1', errors='strict'):

@@ -1,22 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 '''
-This script demonstrates using the AtramhasisProvider to find the concepts with 'iron' in their label
+This script demonstrates using the AtramhasisProvider to find the concepts with 'Lar' in their label
 '''
-
-import responses
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses
 
 
-@responses.activate
 def main():
-    provider = AtramhasisProvider({'id': 'Atramhasis'}, scheme_uri='http://localhost/conceptschemes/MATERIALS')
-
+    #you can adapt this example by using the base_url of another atramhasis-instance and provide an available scheme_id and the keyword to search for
+    provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://glacial-bastion-1106.herokuapp.com', scheme_id='TREES')
+    keyword = 'Lar'
     results = provider.find(
     {
-        'label': 'alu',
+        'label': keyword,
         'type': 'concept'
     }
 )
