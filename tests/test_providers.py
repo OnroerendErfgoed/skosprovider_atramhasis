@@ -188,6 +188,13 @@ class AtramhasisProviderMockTests(unittest.TestCase):
                           base_url='http://localhost', scheme_id='ONBEKEND')
 
     @responses.activate
+    def test_set_custom_session(self):
+        import requests
+        sess = requests.Session()
+        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES', session=sess)
+        assert sess == provider.session
+
+    @responses.activate
     def test_get_top_concepts_provider(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
         self.assertEqual(len(provider.get_top_concepts()), 51)
