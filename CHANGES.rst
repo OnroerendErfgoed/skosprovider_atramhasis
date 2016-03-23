@@ -2,6 +2,7 @@
 ------------------
 
 - Official support for Py35
+- Allow configuring a requests session. (#14)
 
 0.1.0 (2015-03-19)
 ------------------

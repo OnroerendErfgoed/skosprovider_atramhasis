@@ -41,6 +41,11 @@ class AtramhasisProvider(VocabularyProvider):
         else:
             raise ValueError("Please provide a scheme_id for the provider")
 
+        if 'session' in kwargs:
+            self.session = kwargs['session']
+        else:
+            self.session = requests.Session()
+
         concept_scheme = self._get_concept_scheme()
         super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
 
@@ -253,7 +258,7 @@ class AtramhasisProvider(VocabularyProvider):
 
     def _request(self, request, headers=None, params=None):
         try:
-            res = requests.get(request, headers=headers, params=params)
+            res = self.session.get(request, headers=headers, params=params)
         except ConnectionError as e:
             raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request,))
         if not res.encoding:
