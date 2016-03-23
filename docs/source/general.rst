@@ -3,27 +3,41 @@
 Introduction
 ============
 
-This library offers an implementation of the 
-:class:`skosprovider.providers.VocabularyProvider` interface based on ...
+This library offers an implementation of the
+:class:`skosprovider.providers.VocabularyProvider` interface against an
+`Atramhasis <http://atramhasis.readthedocs.org>`_ backend. This allows you to
+use an Atramhasis instance as a central SKOS repository that can easily be
+called by other applications. Either through using this Skosprovider, or by
+using the services provided by Atramhasis directly.
+
+While this library works with Atramhasis, the services that Atramhasis exposes
+are in fact provided by `pyramid_skosprovider
+<http://pyramid_skosprovider.readthedocs.org>`_. So, if you're not using
+Atramhasis, but do have a backend that implements the services offered by
+pyramid_skosprovider, you can use :mod:`skosprovider_atramhasis` as well.
+
+Finally, if you have a backend that does not implement
+:mod:`pyramid_skosprovider`, but implements exactly the same services,you could
+use that as well.
 
 Installation
 ------------
 
-To be able to use this library you need to have a modern version of Python 
+To be able to use this library you need to have a modern version of Python
 installed. Currently we're supporting versions 2.7, 3.3 and 3.4 of Python.
 
-This easiest way to install this library is through :command:`pip` or 
+This easiest way to install this library is through :command:`pip` or
 :command:`easy install`:
 
-.. code-block:: bash    
-    
+.. code-block:: bash
+
     $ pip install skosprovider_atramhasis
 
 This will download and install :mod:`skosprovider_atramhasis` and a few libraries it
-depends on. 
+depends on.
 
-.. _supported_thesauri:
 
+.. _examples:
 
 Using the providers
 ===================
@@ -39,7 +53,6 @@ to be used. Please consult :ref:`supported_thesauri` for a complete list.
 .. literalinclude:: ../../examples/traditioneel.py
    :language: python
 
-
 Finding concepts
 ----------------
 
@@ -52,7 +65,7 @@ method for a detailed description of how this works.
 Using expand()
 --------------
 
-The expand methods return the id's of all the concepts that are narrower 
+The expand method return the id's of all the concepts that are narrower
 concepts of a certain concept or collection.
 
 See the :meth:`skosprovider_atramhasis.providers.AtramhasisProvider.expand` method for

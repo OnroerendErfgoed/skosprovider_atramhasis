@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to skosprovider_atramhasis's documentation!
-=====================================================
+Skosprovider_atramhasis
+=======================
 
 .. toctree::
    :maxdepth: 2
