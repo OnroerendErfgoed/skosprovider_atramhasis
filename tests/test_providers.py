@@ -11,6 +11,7 @@ from skosprovider_atramhasis.providers import (
 )
 from tests import init_responses
 
+
 @unittest.skip("Tests that use the attramhasis-demo are skipped by default to avoid dependencies.")
 class AtramhasisProviderDemoTests(unittest.TestCase):
     @classmethod
@@ -209,8 +210,8 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         self.assertIsInstance(concept['labels'], list)
 
         preflabels = [{'nl': 'traditioneel'}]
-        preflabels_conc = [{label['language']: label['label']} for label in concept['labels']
-                           if label['type'] == 'prefLabel']
+        preflabels_conc = [{label.language: label.label} for label in concept['labels']
+                           if label.type == 'prefLabel']
         self.assertGreater(len(preflabels_conc), 0)
         for label in preflabels:
             self.assertIn(label, preflabels_conc)
@@ -225,8 +226,8 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         self.assertIsInstance(concept['labels'], list)
 
         preflabels = [{'en': 'The Chestnut'}]
-        preflabels_conc = [{label['language']: label['label']} for label in concept['labels']
-                           if label['type'] == 'prefLabel']
+        preflabels_conc = [{label.language: label.label} for label in concept['labels']
+                           if label.type == 'prefLabel']
         self.assertGreater(len(preflabels_conc), 0)
         for label in preflabels:
             self.assertIn(label, preflabels_conc)
