@@ -284,5 +284,6 @@ class AtramhasisProvider(VocabularyProvider):
                      n['language'] if 'language' in n.keys() else 'und',
                      n['markup'] if 'markup' in n.keys() else None)
                 for n in response.json()['notes']
-            ]
+            ],
+            languages=response.json().get('languages', [])
         )
