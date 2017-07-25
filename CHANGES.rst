@@ -1,3 +1,12 @@
+0.2.0 (2017-??-??)
+------------------
+
+- Update to skosprovider 0.6.1:
+- Allow Notes with HTML (#17)
+- Add languages to Conceptscheme (#18)
+- Add sources to Conceptscheme, Collection and Concept (#19)
+- Add sorting to finders (#20)
+
 0.1.1 (2016-03-23)
 ------------------
 
