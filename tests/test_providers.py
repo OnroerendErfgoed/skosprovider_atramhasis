@@ -360,7 +360,7 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     @responses.activate
     def test_find_collections(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').find(
-            {'type': 'collection'})
+            {'type': 'collection'}, sort='-id')
         self.assertIsInstance(r, list)
         self.assertGreater(len(r), 0)
         for res in r:
