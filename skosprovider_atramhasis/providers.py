@@ -283,5 +283,6 @@ class AtramhasisProvider(VocabularyProvider):
                      n['type'] if 'type' in n.keys() else 'note',
                      n['language'] if 'language' in n.keys() else 'und')
                 for n in response.json()['notes']
-            ]
+            ],
+            languages=response.json().get('languages', [])
         )
