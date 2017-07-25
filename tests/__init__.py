@@ -6,7 +6,7 @@ import responses
 def init_responses():
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',
-    body='{"notes": [], "labels": [], "uri": "urn:x-vioe:styles", "label": null, "id": "STYLES", "subject": []}',
+    body='{"notes": [], "labels": [], "uri": "urn:x-vioe:styles", "label": null, "id": "STYLES", "subject": [], "sources": [], "languages": []}',
     status=200,
     content_type='application/json; charset=UTF-8')
 
@@ -208,17 +208,17 @@ def init_responses():
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',
-    body='{"uri": "https://id.erfgoed.net/thesauri/stijlen_en_culturen", "label": "Styles and Cultures", "notes": [], "id": "STYLES", "labels": [{"type": "prefLabel", "label": "Stijlen en Culturen", "language": "nl"}, {"type": "prefLabel", "label": "Styles and Cultures", "language": "en"}], "subject": []}',
+    body='{"uri": "https://id.erfgoed.net/thesauri/stijlen_en_culturen", "label": "Styles and Cultures", "notes": [], "sources": [], "languages": [], "id": "STYLES", "labels": [{"type": "prefLabel", "label": "Stijlen en Culturen", "language": "nl"}, {"type": "prefLabel", "label": "Styles and Cultures", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/TREES',
-    body='{"uri": "urn:x-skosprovider:trees", "label": "Different types of trees", "notes": [], "id": "TREES", "labels": [{"type": "prefLabel", "label": "Verschillende soorten bomen", "language": "nl"}, {"type": "prefLabel", "label": "Different types of trees", "language": "en"}], "subject": []}',
+    body='{"uri": "urn:x-skosprovider:trees", "label": "Different types of trees", "notes": [], "sources": [], "languages": [], "id": "TREES", "labels": [{"type": "prefLabel", "label": "Verschillende soorten bomen", "language": "nl"}, {"type": "prefLabel", "label": "Different types of trees", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/MATERIALS',
-    body='{"uri": "https://id.erfgoed.net/thesauri/materialen", "label": "Materials", "notes": [], "id": "MATERIALS", "labels": [{"type": "prefLabel", "label": "Materialen", "language": "nl"}, {"type": "prefLabel", "label": "Materials", "language": "en"}], "subject": []}',
+    body='{"uri": "https://id.erfgoed.net/thesauri/materialen", "label": "Materials", "notes": [{"type": "definition", "language": "en", "note": "Types of material", "markup": null}], "sources": [{"citation": "citation about materials"}], "languages": ["en"], "id": "MATERIALS", "labels": [{"type": "prefLabel", "label": "Materialen", "language": "nl"}, {"type": "prefLabel", "label": "Materials", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 

@@ -8,7 +8,7 @@ import requests
 from requests.exceptions import ConnectionError
 
 import logging
-from skosprovider.skos import ConceptScheme, Label, Note
+from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
 from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
@@ -285,5 +285,8 @@ class AtramhasisProvider(VocabularyProvider):
                      n['markup'] if 'markup' in n.keys() else None)
                 for n in response.json()['notes']
             ],
-            languages=response.json().get('languages', [])
+            sources=[
+                dict_to_source(s) for s in response.json()['sources']
+            ],
+            languages=response.json()['languages']
         )
