@@ -173,6 +173,7 @@ class AtramhasisProvider(VocabularyProvider):
         if label:
             params['label'] = label
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -197,6 +198,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -210,6 +212,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -222,6 +225,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -236,6 +240,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -255,6 +260,11 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    def _get_sort_params(self, **kwargs):
+        return {
+            'sort': self._get_sort(**kwargs),
+            'sort_order': self._get_sort_order(**kwargs)
+        } if self._get_sort(**kwargs) else {}
 
     def _request(self, request, headers=None, params=None):
         try:
