@@ -18,7 +18,7 @@ requires = [
 ]
 setup(
     name='skosprovider_atramhasis',
-    version='0.1.1',
+    version='0.2.0',
     description='Skosprovider implementation of Atramhasis internal Vocabularies',
     long_description=README,
     packages=packages,

@@ -6,7 +6,7 @@ import responses
 def init_responses():
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',
-    body='{"notes": [], "labels": [], "uri": "urn:x-vioe:styles", "label": null, "id": "STYLES", "subject": []}',
+    body='{"notes": [], "labels": [], "uri": "urn:x-vioe:styles", "label": null, "id": "STYLES", "subject": [], "sources": [], "languages": []}',
     status=200,
     content_type='application/json; charset=UTF-8')
 
@@ -31,9 +31,9 @@ def init_responses():
     status=200,
     content_type='application/json; charset=UTF-8')
 
-    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en',
+    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en&sort=-id',
     match_querystring=True,
-    body='[{"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}]',
+    body='[{"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}]',
     status=200,
     content_type='application/json; charset=UTF-8')
 
@@ -138,7 +138,7 @@ def init_responses():
               content_type='application/json; charset=UTF-8')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/TREES/c/2',
-    body='{"subordinate_arrays": [], "matches": {"related": ["http://id.python.org/different/types/of/trees/nr/17/the/other/chestnut"]}, "labels": [{"type": "prefLabel", "language": "en", "label": "The Chestnut"}, {"type": "altLabel", "language": "nl", "label": "De Paardekastanje"}, {"type": "altLabel", "language": "fr", "label": "la ch\u00e2taigne"}], "narrower": [], "related": [], "broader": [], "id": 2, "member_of": [{"labels": [{"type": "prefLabel", "language": "en", "label": "Trees by species"}, {"type": "prefLabel", "language": "nl", "label": "Bomen per soort"}], "label": "Bomen per soort", "type": "collection", "id": 3, "uri": "urn:x-skosprovider:trees/3"}], "notes": [{"note": "A different type of tree.", "type": "definition", "language": "en"}], "uri": "urn:x-skosprovider:trees/2", "label": "The Chestnut", "type": "concept"}',
+    body='{"subordinate_arrays": [], "matches": {"related": ["http://id.python.org/different/types/of/trees/nr/17/the/other/chestnut"]}, "labels": [{"type": "prefLabel", "language": "en", "label": "The Chestnut"}, {"type": "altLabel", "language": "nl", "label": "De Paardekastanje"}, {"type": "altLabel", "language": "fr", "label": "la ch\u00e2taigne"}], "narrower": [], "related": [], "broader": [], "id": 2, "member_of": [{"labels": [{"type": "prefLabel", "language": "en", "label": "Trees by species"}, {"type": "prefLabel", "language": "nl", "label": "Bomen per soort"}], "label": "Bomen per soort", "type": "collection", "id": 3, "uri": "urn:x-skosprovider:trees/3"}], "notes": [{"note": "<h1>A different type of tree.</h1>", "type": "definition", "language": "en", "markup": "HTML"}], "uri": "urn:x-skosprovider:trees/2", "label": "The Chestnut", "type": "concept"}',
     status=200,
     content_type='application/json; charset=UTF-8')
 
@@ -208,17 +208,17 @@ def init_responses():
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',
-    body='{"uri": "https://id.erfgoed.net/thesauri/stijlen_en_culturen", "label": "Styles and Cultures", "notes": [], "id": "STYLES", "labels": [{"type": "prefLabel", "label": "Stijlen en Culturen", "language": "nl"}, {"type": "prefLabel", "label": "Styles and Cultures", "language": "en"}], "subject": []}',
+    body='{"uri": "https://id.erfgoed.net/thesauri/stijlen_en_culturen", "label": "Styles and Cultures", "notes": [], "sources": [], "languages": [], "id": "STYLES", "labels": [{"type": "prefLabel", "label": "Stijlen en Culturen", "language": "nl"}, {"type": "prefLabel", "label": "Styles and Cultures", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/TREES',
-    body='{"uri": "urn:x-skosprovider:trees", "label": "Different types of trees", "notes": [], "id": "TREES", "labels": [{"type": "prefLabel", "label": "Verschillende soorten bomen", "language": "nl"}, {"type": "prefLabel", "label": "Different types of trees", "language": "en"}], "subject": []}',
+    body='{"uri": "urn:x-skosprovider:trees", "label": "Different types of trees", "notes": [], "sources": [], "languages": [], "id": "TREES", "labels": [{"type": "prefLabel", "label": "Verschillende soorten bomen", "language": "nl"}, {"type": "prefLabel", "label": "Different types of trees", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/MATERIALS',
-    body='{"uri": "https://id.erfgoed.net/thesauri/materialen", "label": "Materials", "notes": [], "id": "MATERIALS", "labels": [{"type": "prefLabel", "label": "Materialen", "language": "nl"}, {"type": "prefLabel", "label": "Materials", "language": "en"}], "subject": []}',
+    body='{"uri": "https://id.erfgoed.net/thesauri/materialen", "label": "Materials", "notes": [{"type": "definition", "language": "en", "note": "Types of material", "markup": null}], "sources": [{"citation": "citation about materials"}], "languages": ["en"], "id": "MATERIALS", "labels": [{"type": "prefLabel", "label": "Materialen", "language": "nl"}, {"type": "prefLabel", "label": "Materials", "language": "en"}], "subject": []}',
     status=200,
     content_type='application/json')
 

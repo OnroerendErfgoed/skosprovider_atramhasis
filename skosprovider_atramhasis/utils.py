@@ -5,7 +5,8 @@ Utility functions for :mod:`skosprovider_atramhasis`.
 
 from skosprovider.skos import (
     Concept,
-    ConceptScheme, Collection, dict_to_label, dict_to_note)
+    ConceptScheme, Collection,
+    dict_to_label, dict_to_note, dict_to_source)
 
 import logging
 import sys
@@ -74,6 +75,8 @@ def dict_to_thing(dict):
             thing.labels = [(dict_to_label(l)) for l in dict['labels']]
         if 'notes' in dict:
             thing.notes = [(dict_to_note(n)) for n in dict['notes']]
+        if 'sources' in dict:
+            thing.sources = [(dict_to_source(n)) for n in dict['sources']]
         if 'narrower' in dict:
             thing.narrower = [(dict_to_thing(n)) for n in dict['narrower']]
         if 'broader' in dict:

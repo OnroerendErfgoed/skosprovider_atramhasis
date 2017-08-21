@@ -8,7 +8,7 @@ import requests
 from requests.exceptions import ConnectionError
 
 import logging
-from skosprovider.skos import ConceptScheme, Label, Note
+from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
 from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
@@ -173,6 +173,7 @@ class AtramhasisProvider(VocabularyProvider):
         if label:
             params['label'] = label
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -197,6 +198,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -210,6 +212,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -222,6 +225,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -236,6 +240,7 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -255,6 +260,9 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @staticmethod
+    def _get_sort_params(**kwargs):
+        return {'sort': kwargs.get('sort', None)} or {}
 
     def _request(self, request, headers=None, params=None):
         try:
@@ -281,7 +289,12 @@ class AtramhasisProvider(VocabularyProvider):
             notes=[
                 Note(n['note'] if 'note' in n.keys() else '<no note>',
                      n['type'] if 'type' in n.keys() else 'note',
-                     n['language'] if 'language' in n.keys() else 'und')
+                     n['language'] if 'language' in n.keys() else 'und',
+                     n['markup'] if 'markup' in n.keys() else None)
                 for n in response.json()['notes']
-            ]
+            ],
+            sources=[
+                dict_to_source(s) for s in response.json()['sources']
+            ],
+            languages=response.json()['languages']
         )
