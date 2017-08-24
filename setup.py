@@ -19,7 +19,7 @@ requires = [
 setup(
     name='skosprovider_atramhasis',
     version='0.2.0',
-    description='Skosprovider implementation of Atramhasis internal Vocabularies',
+    description='Skosprovider implementation of Atramhasis Vocabularies',
     long_description=README,
     packages=packages,
     include_package_data=True,
@@ -35,6 +35,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     author='Flanders Heritage Agency',
     author_email='ict@onroerenderfgoed.be',
