@@ -2,7 +2,7 @@
 --requirement requirements.txt
 
 # Documentation
-Sphinx==1.6.3
+Sphinx==1.6.5
 
 #testing
 tox
