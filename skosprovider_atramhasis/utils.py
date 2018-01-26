@@ -69,7 +69,6 @@ def dict_to_thing(dict):
             raise ValueError("type: type is not valid ('concept', 'collection') in dict")
         thing.type = type
         thing.uri = dict['uri'] if 'uri' in dict else None
-        thing.label = dict['label'] if 'label' in dict else None
         thing.concept_scheme = ConceptScheme(dict['concept_scheme']) if 'concept_scheme' in dict else None
         if 'labels' in dict:
             thing.labels = [(dict_to_label(l)) for l in dict['labels']]
