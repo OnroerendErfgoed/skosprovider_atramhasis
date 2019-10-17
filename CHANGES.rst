@@ -1,3 +1,9 @@
+0.3.0 (2019-??-??)
+------------------
+
+- Update to skosprovider 0.7.0
+- Update supported Python version (#61)
+
 0.2.0 (2017-08-24)
 ------------------
 

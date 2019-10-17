@@ -13,12 +13,12 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.5.0',
+    'skosprovider>=0.7.0',
     'requests'
 ]
 setup(
     name='skosprovider_atramhasis',
-    version='0.2.0',
+    version='0.3.0',
     description='Skosprovider implementation of Atramhasis Vocabularies',
     long_description=README,
     packages=packages,
@@ -32,9 +32,9 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     author='Flanders Heritage Agency',
     author_email='ict@onroerenderfgoed.be',
