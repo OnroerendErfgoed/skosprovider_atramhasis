@@ -11,13 +11,15 @@ from skosprovider_atramhasis.providers import (
 )
 from tests import init_responses
 
+import pytest
+
 
 @unittest.skip("Tests that use the attramhasis-demo are skipped by default to avoid dependencies.")
 class AtramhasisProviderDemoTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """
-        Configure the Atramhasis parameters to run all tests in this class: 
+        Configure the Atramhasis parameters to run all tests in this class:
         *base_url
         *scheme_id
         *id of a concept in scheme_id
@@ -325,16 +327,21 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_find_with_collection_all(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
-            {'type': 'concept', 'collection': {'id': '0', 'depth': 'all'}})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        r = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost',
+            scheme_id='ERFGOEDTYPES'
+        ).find({
+            'type': 'concept',
+            'collection': {'id': 2132, 'depth': 'all'}
+        })
+        assert len(r) == 2
         keys_first_display = r[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
-        self.assertIn("aluminium", [label['label'] for label in r])
+            assert key in keys_first_display
+        assert "paleobodems" in [label['label'] for label in r]
         for res in r:
-            self.assertEqual(res['type'], 'concept')
+            assert res['type'] == 'concept'
 
     @responses.activate
     def test_find_with_collection_invalid_params(self):
@@ -346,39 +353,39 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_find_with_collection_members(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
-            {'type': 'concept', 'collection': {'id': '0', 'depth': 'members'}})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
-        keys_first_display = r[0].keys()
-        for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
-        self.assertIn("ijzer", [label['label'] for label in r])
-        for res in r:
-            self.assertEqual(res['type'], 'concept')
+        with pytest.raises(ValueError):
+            r = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost',
+                scheme_id='MATERIALS'
+            ).find({
+                'type': 'concept',
+                'collection': {'id': '0', 'depth': 'members'}
+            })
 
     @responses.activate
     def test_find_collections(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').find(
             {'type': 'collection'}, sort='-id')
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        assert len(r) > 0
         for res in r:
-            self.assertEqual(res['type'], 'collection')
+            assert res['type'] == 'collection'
 
     @responses.activate
     def test_find_all_concepts_collections(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
             {'type': 'all'})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        assert len(r) > 0
         for res in r:
-            self.assertIn(res['type'], ['collection', 'concept'])
+            assert res['type'] in ['collection', 'concept']
 
     @responses.activate
     def test_find_wrong_type(self):
-        self.assertRaises(ValueError, AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
-                                                         scheme_id='STYLES').find, {'type': 'collectie'})
+        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
+            {'type': 'all'})
+        r2 = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
+            {'type': 'collection'})
+        assert len(r) == len(r2)
 
     @responses.activate
     def test_find_keyword(self):

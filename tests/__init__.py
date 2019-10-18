@@ -222,6 +222,21 @@ def init_responses():
     status=200,
     content_type='application/json')
 
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES',
+    body='{"notes": [], "labels": [], "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes", "label": "Erfgoedtypes", "id": "ERFGOEDTYPES", "subject": [], "sources": [], "languages": []}',
+    status=200,
+    content_type='application/json; charset=UTF-8')
+
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES/c/?type=concept&collection=2132',
+        body='[{"label": "paleobodems", "type": "concept", "id": 2057, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/2057"}, {"label": "organische bodems", "type": "concept", "id": 2040, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/2040"}]',
+        status=200,
+        content_type='application/json'
+    )
+
 
 
 
