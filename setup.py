@@ -21,6 +21,7 @@ setup(
     version='0.3.0',
     description='Skosprovider implementation of Atramhasis Vocabularies',
     long_description=README,
+    long_description_content_type='x-rst',
     packages=packages,
     include_package_data=True,
     install_requires=requires,
