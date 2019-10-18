@@ -133,7 +133,7 @@ class AtramhasisProvider(VocabularyProvider):
                 language of the provider and finally falls back to `en`.
         '''
 
-        # #  interprete and validate query parameters (label, type and collection)
+        # interprete and validate query parameters
 
         params = {}
         params['language'] = self._get_language(**kwargs)
@@ -148,7 +148,6 @@ class AtramhasisProvider(VocabularyProvider):
             params['type'] = query['type']
 
         # Collection to search in (optional)
-        children = False
         if 'collection' in query:
             collection = query['collection']
             if not 'id' in collection:
@@ -156,6 +155,17 @@ class AtramhasisProvider(VocabularyProvider):
             params['collection'] = collection['id']
             if 'depth' in collection and collection['depth'] != 'all':
                     raise ValueError("collection - 'depth': only 'all' is supported by Atramhasis")
+
+        # Match
+        if 'matches' in query:
+            match_uri = query['matches'].get('uri', None)
+            if not match_uri:
+                raise ValueError('Please provide a URI to match with.')
+            else:
+                params['match'] = match_uri
+            match_type = query['matches'].get('type', None)
+            if match_type:
+                params['match_type'] = match_type
 
         search_url = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         response = self._request(search_url, {'Accept': 'application/json'}, params)

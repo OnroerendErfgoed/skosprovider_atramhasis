@@ -397,6 +397,39 @@ class AtramhasisProviderMockTests(unittest.TestCase):
             self.assertEqual(res['type'], 'concept')
 
     @responses.activate
+    def test_find_match(self):
+        r = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost',
+            scheme_id='ERFGOEDTYPES'
+        ).find({
+            'matches': {
+                'uri': 'http://vocab.getty.edu/aat/300004983'
+            }
+        })
+        assert len(r) == 1
+        veekralen = r[0]
+        assert veekralen['type'] == 'concept'
+        assert veekralen['uri'] == 'https://id.erfgoed.net/thesauri/erfgoedtypes/1314'
+
+    @responses.activate
+    def test_find_match_close(self):
+        r = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost',
+            scheme_id='ERFGOEDTYPES'
+        ).find({
+            'matches': {
+                'uri': 'http://vocab.getty.edu/aat/300004983',
+                'type': 'close'
+            }
+        })
+        assert len(r) == 1
+        veekralen = r[0]
+        assert veekralen['type'] == 'concept'
+        assert veekralen['uri'] == 'https://id.erfgoed.net/thesauri/erfgoedtypes/1314'
+
+    @responses.activate
     def test_expand(self):
         all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                            scheme_id='STYLES').expand(1)
@@ -417,10 +450,10 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     def test_expand_invalid(self):
         all_childeren_invalid = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                                    scheme_id='STYLES').expand('invalid')
-        self.assertFalse(all_childeren_invalid)
+        assert not all_childeren_invalid
 
     @responses.activate
     def test_request_encoding(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
         response = provider._request("http://localhost/no_encoding")
-        self.assertEqual(response.encoding, "utf-8")
+        assert response.encoding == "utf-8"
