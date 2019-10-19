@@ -430,6 +430,19 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         assert veekralen['uri'] == 'https://id.erfgoed.net/thesauri/erfgoedtypes/1314'
 
     @responses.activate
+    def test_find_match_no_uri(self):
+        with pytest.raises(ValueError):
+            r = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost',
+                scheme_id='ERFGOEDTYPES'
+            ).find({
+                'matches': {
+                    'type': 'close'
+                }
+            })
+
+    @responses.activate
     def test_expand(self):
         all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                            scheme_id='STYLES').expand(1)
