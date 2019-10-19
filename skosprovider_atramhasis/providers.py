@@ -133,54 +133,45 @@ class AtramhasisProvider(VocabularyProvider):
                 language of the provider and finally falls back to `en`.
         '''
 
-        # #  interprete and validate query parameters (label, type and collection)
-        # Label
-        label = None
-        if 'label' in query:
-            label = query['label']
+        # interprete and validate query parameters
 
-        # Type: 'collection','concept' or 'all'
-        type_c = 'all'
-        if 'type' in query:
-            type_c = query['type']
-        if type_c not in ('all', 'concept', 'collection'):
-            raise ValueError("type: only the following values are allowed: 'all', 'concept', 'collection'")
+        params = {}
+        params['language'] = self._get_language(**kwargs)
+        params.update(self._get_sort_params(**kwargs))
+
+        # Label
+        if 'label' in query:
+            params['label'] = query['label']
+
+        # Type: 'collection' or 'concept' or 'all'
+        if 'type' in query and query['type'] in ['concept', 'collection']:
+            params['type'] = query['type']
 
         # Collection to search in (optional)
-        children = False
         if 'collection' in query:
             collection = query['collection']
             if not 'id' in collection:
                 raise ValueError("collection: 'id' is required key if a collection-dictionary is given")
-            depth_all = False
-            if 'depth' in collection:
-                if collection['depth'] in ['members', 'all']:
-                    depth_all = collection['depth'] == 'all'
-                else:
-                    raise ValueError(
-                        "collection - 'depth': only the following values are allowed: 'members', 'all'")
-            if depth_all:
-                children = self.expand(collection['id'])
-                if not children:
-                    return False
-            else:
-                answer = self.get_children_display(collection['id'])
-                children = [a['id'] for a in answer]
+            params['collection'] = collection['id']
+            if 'depth' in collection and collection['depth'] != 'all':
+                    raise ValueError("collection - 'depth': only 'all' is supported by Atramhasis")
 
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
-        params = dict()
-        params['type'] = type_c
-        if label:
-            params['label'] = label
-        params['language'] = self._get_language(**kwargs)
-        params.update(self._get_sort_params(**kwargs))
-        response = self._request(request, {'Accept': 'application/json'}, params)
+        # Match
+        if 'matches' in query:
+            match_uri = query['matches'].get('uri', None)
+            if not match_uri:
+                raise ValueError('Please provide a URI to match with.')
+            else:
+                params['match'] = match_uri
+            match_type = query['matches'].get('type', None)
+            if match_type:
+                params['match_type'] = match_type
+
+        search_url = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
+        response = self._request(search_url, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
-        if children:
-            return [r for r in response.json() if r['id'] in children]
-        else:
-            return response.json()
+        return response.json()
 
     def get_all(self, **kwargs):
         '''Returns all concepts and collections in this provider.
