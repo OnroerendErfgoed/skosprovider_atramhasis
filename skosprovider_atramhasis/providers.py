@@ -21,6 +21,12 @@ class AtramhasisProvider(VocabularyProvider):
     """A provider that can work with the Atramhasis REST services (based on pyramid_skosprovider)
     """
 
+    base_url = None
+
+    scheme_id = None
+
+    session = None
+
     def __init__(self, metadata, **kwargs):
         """ Constructor of the :class:`skosprovider_atramhasis.providers.AtramhasisProvider`
 
@@ -30,8 +36,14 @@ class AtramhasisProvider(VocabularyProvider):
             * The :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
                 is the default :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
         """
-        if not 'default_language' in metadata:
-            metadata['default_language'] = 'en'
+
+        if not 'subject' in metadata:
+            metadata['subject'] = []
+        self.metadata = metadata
+        self.allowed_instance_scopes = kwargs.get(
+            'allowed_instance_scopes',
+            ['single', 'threaded_thread']
+        )
         if 'base_url' in kwargs:
             self.base_url = kwargs['base_url']
         else:
@@ -46,8 +58,36 @@ class AtramhasisProvider(VocabularyProvider):
         else:
             self.session = requests.Session()
 
-        concept_scheme = self._get_concept_scheme()
-        super(AtramhasisProvider, self).__init__(metadata, concept_scheme=concept_scheme, **kwargs)
+    @property
+    def concept_scheme(self):
+        return self._get_concept_scheme()
+
+    def _get_concept_scheme(self):
+        request = self.base_url + '/conceptschemes/' + self.scheme_id
+        response = self._request(request, {'Accept': 'application/json'}, dict())
+        if response.status_code == 404:
+            raise RuntimeError("Conceptscheme not found for scheme_id: %s" % self.scheme_id)
+        cs = response.json()
+        return ConceptScheme(
+            cs['uri'],
+            labels=[
+                Label(l['label'] if 'label' in l.keys() else '<no label>',
+                      l['type'] if 'type' in l.keys() else 'prefLabel',
+                      l['language'] if 'language' in l.keys() else 'und')
+                for l in cs['labels']
+            ],
+            notes=[
+                Note(n['note'] if 'note' in n.keys() else '<no note>',
+                     n['type'] if 'type' in n.keys() else 'note',
+                     n['language'] if 'language' in n.keys() else 'und',
+                     n['markup'] if 'markup' in n.keys() else None)
+                for n in cs['notes']
+            ],
+            sources=[
+                dict_to_source(s) for s in cs['sources']
+            ],
+            languages=cs['languages']
+        )
 
     def get_by_id(self, id):
         """ Get a :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection` by id
@@ -263,29 +303,3 @@ class AtramhasisProvider(VocabularyProvider):
         if not res.encoding:
             res.encoding = 'utf-8'
         return res
-
-    def _get_concept_scheme(self):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id
-        response = self._request(request, {'Accept': 'application/json'}, dict())
-        if response.status_code == 404:
-            raise Exception("Conceptscheme not found for scheme_id: %s" % self.scheme_id)
-        return ConceptScheme(
-            response.json()['uri'],
-            labels=[
-                Label(l['label'] if 'label' in l.keys() else '<no label>',
-                      l['type'] if 'type' in l.keys() else 'prefLabel',
-                      l['language'] if 'language' in l.keys() else 'und')
-                for l in response.json()['labels']
-            ],
-            notes=[
-                Note(n['note'] if 'note' in n.keys() else '<no note>',
-                     n['type'] if 'type' in n.keys() else 'note',
-                     n['language'] if 'language' in n.keys() else 'und',
-                     n['markup'] if 'markup' in n.keys() else None)
-                for n in response.json()['notes']
-            ],
-            sources=[
-                dict_to_source(s) for s in response.json()['sources']
-            ],
-            languages=response.json()['languages']
-        )

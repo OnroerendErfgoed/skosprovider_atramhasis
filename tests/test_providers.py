@@ -182,13 +182,20 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_base_url_not_available(self):
-        self.assertRaises(ProviderUnavailableException, AtramhasisProvider, {'id': 'Atramhasis'},
-                          base_url='http://not_available', scheme_id='STYLES')
+        with pytest.raises(ProviderUnavailableException):
+            cs = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://not_available', scheme_id='STYLES'
+            ).concept_scheme
 
     @responses.activate
     def test_scheme_id_not_available(self):
-        self.assertRaises(Exception, AtramhasisProvider, {'id': 'Atramhasis'},
-                          base_url='http://localhost', scheme_id='ONBEKEND')
+        with pytest.raises(RuntimeError):
+            cs = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost',
+                scheme_id='ONBEKEND'
+            ).concept_scheme
 
     @responses.activate
     def test_set_custom_session(self):
