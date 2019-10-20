@@ -8,7 +8,6 @@ install:
 - pip install -U setuptools
 - pip install -r requirements-dev.txt #fix versions
 - python setup.py develop
-- pip install pytest pytest-cov coveralls #install test deps
 script:
 - py.test --cov skosprovider_atramhasis --cov-report term-missing tests
 after_success:
