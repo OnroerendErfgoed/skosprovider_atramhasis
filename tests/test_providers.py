@@ -181,12 +181,16 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         init_responses()
 
     def test_default_provider_no_base_url_and_scheme_id(self):
-        self.assertRaises(ValueError, AtramhasisProvider, {'id': 'Atramhasis'})
+        with pytest.raises(ValueError):
+            p = AtramhasisProvider({'id': 'Atramhasis'})
 
     def test_default_provider_no_scheme_id(self):
-        self.assertRaises(ValueError, AtramhasisProvider, {'id': 'Atramhasis'}, base_url='http://localhost')
+        with pytest.raises(ValueError):
+            p = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost'
+            )
 
-    @responses.activate
     def test_base_url_not_available(self):
         with pytest.raises(ProviderUnavailableException):
             cs = AtramhasisProvider(
@@ -224,40 +228,32 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     @responses.activate
     def test_get_top_concepts_provider(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
-        self.assertEqual(len(provider.get_top_concepts()), 51)
+        assert len(provider.get_top_concepts()) == 51
 
     @responses.activate
     def test_get_by_id_concept(self):
-        concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').get_by_id(
-            '1')
-        concept = concept.__dict__
-        self.assertEqual(concept['uri'], 'urn:x-vioe:styles:1')
-        self.assertEqual(concept['type'], 'concept')
-        self.assertIsInstance(concept['labels'], list)
-
-        preflabels = [{'nl': 'traditioneel'}]
-        preflabels_conc = [{label.language: label.label} for label in concept['labels']
-                           if label.type == 'prefLabel']
-        self.assertGreater(len(preflabels_conc), 0)
-        for label in preflabels:
-            self.assertIn(label, preflabels_conc)
+        concept = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost', scheme_id='STYLES'
+        ).get_by_id('1')
+        assert isinstance(concept, Concept)
+        assert concept.uri == 'urn:x-vioe:styles:1'
+        assert concept.type == 'concept'
+        assert len(concept.labels) > 0
+        assert 'traditioneel' in [l.label for l in concept.labels if l.type == 'prefLabel']
 
     @responses.activate
     def test_get_by_id_concept_matches(self):
-        concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='TREES').get_by_id(
-            '2')
-        concept = concept.__dict__
-        self.assertEqual(concept['uri'], 'urn:x-skosprovider:trees/2')
-        self.assertEqual(concept['type'], 'concept')
-        self.assertIsInstance(concept['labels'], list)
+        concept = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost', scheme_id='TREES'
+        ).get_by_id('2')
 
-        preflabels = [{'en': 'The Chestnut'}]
-        preflabels_conc = [{label.language: label.label} for label in concept['labels']
-                           if label.type == 'prefLabel']
-        self.assertGreater(len(preflabels_conc), 0)
-        for label in preflabels:
-            self.assertIn(label, preflabels_conc)
-
+        assert isinstance(concept, Concept)
+        assert concept.uri == 'urn:x-skosprovider:trees/2'
+        assert concept.type == 'concept'
+        assert len(concept.labels) > 0
+        assert 'The Chestnut' in [l.label for l in concept.labels if l.type == 'prefLabel']
 
     @responses.activate
     def test_get_by_id_nonexistant_id(self):
