@@ -4,6 +4,12 @@
 import unittest
 
 from skosprovider.exceptions import ProviderUnavailableException
+from skosprovider.skos import (
+    ConceptScheme,
+    Collection,
+    Concept
+)
+
 import responses
 
 from skosprovider_atramhasis.providers import (
@@ -197,12 +203,23 @@ class AtramhasisProviderMockTests(unittest.TestCase):
                 scheme_id='ONBEKEND'
             ).concept_scheme
 
-    @responses.activate
     def test_set_custom_session(self):
         import requests
         sess = requests.Session()
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES', session=sess)
         assert sess == provider.session
+
+    @responses.activate
+    def test_conceptscheme(self):
+        cs = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost',
+            scheme_id='MATERIALS'
+        ).concept_scheme
+        assert isinstance(cs, ConceptScheme)
+        assert len(cs.labels) == 2
+        assert len(cs.notes) == 1
+        assert len(cs.sources) == 1
 
     @responses.activate
     def test_get_top_concepts_provider(self):
