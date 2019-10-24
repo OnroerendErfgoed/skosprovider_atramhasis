@@ -259,91 +259,96 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     def test_get_by_id_nonexistant_id(self):
         concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').get_by_id(
             '123')
-        self.assertFalse(concept)
+        assert not concept
 
     @responses.activate
     def test_get_by_uri(self):
         concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').get_by_uri(
             'http://localhost/conceptschemes/STYLES/c/1')
-        concept = concept.__dict__
-        self.assertEqual(concept['uri'], 'urn:x-vioe:styles:1')
-        self.assertEqual(concept['id'], 1)
+        assert concept.id == 1
+        assert concept.uri == 'urn:x-vioe:styles:1'
 
     @responses.activate
     def test_get_by_uri_404(self):
         concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').get_by_uri(
             'http://localhost/conceptschemes/STYLES/c/1234567')
-        self.assertFalse(concept)
+        assert not concept
 
     @responses.activate
     def test_get_by_uri_wrong_scheme_id(self):
-        concept = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').get_by_uri(
-            'http://localhost/conceptschemes/STYLES/c/1234')
-        self.assertFalse(concept)
+        concept = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost',
+            scheme_id='STYLESS'
+        ).get_by_uri(
+            'http://localhost/conceptschemes/STYLES/c/1234'
+        )
+        assert not concept
 
     @responses.activate
     def test_get_all(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
-        self.assertEqual(len(provider.get_all()), 71)
+        assert len(provider.get_all()) == 71
 
     @responses.activate
     def test_get_all_404(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='TREES')
-        self.assertFalse(provider.get_all())
+        assert not provider.get_all()
 
     @responses.activate
     def test_get_top_display(self):
-        top_atramhasis_display = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
-                                                    scheme_id='STYLES').get_top_display()
-        self.assertIsInstance(top_atramhasis_display, list)
-        self.assertGreater(len(top_atramhasis_display), 0)
+        top_atramhasis_display = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost', scheme_id='STYLES'
+        ).get_top_display()
+        assert isinstance(top_atramhasis_display, list)
+        assert len(top_atramhasis_display) > 0
         keys_first_display = top_atramhasis_display[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
+            assert key in keys_first_display
 
     @responses.activate
     def test_get_top_display_404(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='TREES')
-        self.assertFalse(provider.get_top_display())
+        assert not provider.get_top_display()
 
     @responses.activate
     def test_get_top_concepts(self):
         top_atramhasis_concepts = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                                      scheme_id='STYLES').get_top_concepts()
-        self.assertIsInstance(top_atramhasis_concepts, list)
-        self.assertGreater(len(top_atramhasis_concepts), 0)
+        assert isinstance(top_atramhasis_concepts, list)
+        assert len(top_atramhasis_concepts) > 0
 
     @responses.activate
     def test_get_top_concepts_404(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                                      scheme_id='TREES')
-        self.assertFalse(provider.get_top_concepts())
+        assert not provider.get_top_concepts()
 
     @responses.activate
     def test_get_childeren_display(self):
         childeren_atramhasis = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                                   scheme_id='MATERIALS').get_children_display(8)
-        self.assertIsInstance(childeren_atramhasis, list)
-        self.assertGreater(len(childeren_atramhasis), 0)
+        assert len(childeren_atramhasis) > 0
         keys_first_display = childeren_atramhasis[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
-        self.assertIn("aluminium", [label['label'] for label in childeren_atramhasis])
+            assert key in keys_first_display
+        assert "aluminium" in [label['label'] for label in childeren_atramhasis]
 
     @responses.activate
     def test_get_childeren_display_404(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                                   scheme_id='TREES')
-        self.assertFalse(provider.get_children_display(3))
+        assert not provider.get_children_display(3)
 
     @responses.activate
     def test_find_404(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='TREES').find(
             {'type': 'concept', 'collection': {'id': '100', 'depth': 'all'}})
-        self.assertFalse(r)
+        assert not r
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='TREES').find(
             {'type': 'concept', 'collection': {'id': '3', 'depth': 'all'}})
-        self.assertFalse(r)
+        assert not r
 
     @responses.activate
     def test_find_with_collection_all(self):
@@ -366,10 +371,14 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     @responses.activate
     def test_find_with_collection_invalid_params(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS')
-        self.assertRaises(ValueError, provider.find,
-                          {'type': 'concept', 'collection': {'id': '0', 'depth': 'very deep'}})
-        self.assertRaises(ValueError, provider.find, {'type': 'concept', 'collection': {'depth': 'all'}})
-
+        with pytest.raises(ValueError):
+            provider.find({
+                'type': 'concept', 'collection': {'id': '0', 'depth': 'very deep'}
+            })
+        with pytest.raises(ValueError):
+            provider.find({
+                'type': 'concept', 'collection': {'depth': 'all'}
+            })
 
     @responses.activate
     def test_find_with_collection_members(self):
@@ -409,12 +418,13 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_find_keyword(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').find(
-            {'label': 'mod', 'type': 'concept'})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        r = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost', scheme_id='STYLES'
+        ).find({'label': 'mod', 'type': 'concept'})
+        assert len(r) > 0
         for res in r:
-            self.assertEqual(res['type'], 'concept')
+            assert res['type'] == 'concept'
 
     @responses.activate
     def test_find_match(self):
@@ -466,18 +476,16 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     def test_expand(self):
         all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                            scheme_id='STYLES').expand(1)
-        self.assertIsInstance(all_childeren, list)
-        self.assertGreater(len(all_childeren), 0)
-        self.assertIn('1', all_childeren)
+        assert len(all_childeren) > 0
+        assert '1' in all_childeren
 
     @responses.activate
     def test_expand(self):
         all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                            scheme_id='MATERIALS').expand(8)
-        self.assertIsInstance(all_childeren, list)
-        self.assertGreater(len(all_childeren), 0)
-        self.assertIn(8, all_childeren)
-        self.assertIn(48, all_childeren)
+        assert len(all_childeren) > 0
+        assert 8 in all_childeren
+        assert 48 in all_childeren
 
     @responses.activate
     def test_expand_invalid(self):
