@@ -200,7 +200,7 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_scheme_id_not_available(self):
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ProviderUnavailableException):
             cs = AtramhasisProvider(
                 {'id': 'Atramhasis'},
                 base_url='http://localhost',
@@ -473,11 +473,19 @@ class AtramhasisProviderMockTests(unittest.TestCase):
             })
 
     @responses.activate
+    def test_expandi_not_found(self):
+        all_children = AtramhasisProvider(
+            {'id': 'Atramhasis'},
+            base_url='http://localhost', scheme_id='TREES'
+        ).expand(100)
+        assert not all_children
+
+    @responses.activate
     def test_expand(self):
-        all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
+        all_children = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
                                            scheme_id='STYLES').expand(1)
-        assert len(all_childeren) > 0
-        assert '1' in all_childeren
+        assert len(all_children) > 0
+        assert '1' in all_children
 
     @responses.activate
     def test_expand(self):
@@ -489,9 +497,11 @@ class AtramhasisProviderMockTests(unittest.TestCase):
 
     @responses.activate
     def test_expand_invalid(self):
-        all_childeren_invalid = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost',
-                                                   scheme_id='STYLES').expand('invalid')
-        assert not all_childeren_invalid
+        with pytest.raises(ProviderUnavailableException) as e:
+            AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost', scheme_id='STYLES'
+            ).expand('invalid')
 
     @responses.activate
     def test_request_encoding(self):
