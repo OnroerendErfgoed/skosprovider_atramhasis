@@ -395,15 +395,24 @@ class AtramhasisProviderMockTests(unittest.TestCase):
     @responses.activate
     def test_find_collections(self):
         r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').find(
-            {'type': 'collection'}, sort='-id')
-        assert len(r) > 0
-        for res in r:
-            assert res['type'] == 'collection'
+            {'type': 'collection'}, sort='id')
+        assert len(r) == 5
+        assert all([res['type'] =='collection' for res in r])
+        assert [0, 60, 61, 62, 63] == [res['id'] for res in r]
+
+    @responses.activate
+    def test_find_collections_sort_desc(self):
+        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES').find(
+            {'type': 'collection'}, sort='id', sort_order='desc')
+        assert len(r) == 5
+        assert all([res['type'] =='collection' for res in r])
+        assert [63, 62, 61, 60, 0] == [res['id'] for res in r]
 
     @responses.activate
     def test_find_all_concepts_collections(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find(
-            {'type': 'all'})
+        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='MATERIALS').find({
+            'type': 'all'
+        })
         assert len(r) > 0
         for res in r:
             assert res['type'] in ['collection', 'concept']
@@ -508,3 +517,4 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
         response = provider._request("http://localhost/no_encoding")
         assert response.encoding == "utf-8"
+

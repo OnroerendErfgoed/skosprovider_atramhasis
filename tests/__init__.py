@@ -31,6 +31,12 @@ def init_responses():
     status=200,
     content_type='application/json; charset=UTF-8')
 
+    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en&sort=id',
+    match_querystring=True,
+    body='[{"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}]',
+    status=200,
+    content_type='application/json; charset=UTF-8')
+
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en&sort=-id',
     match_querystring=True,
     body='[{"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}]',

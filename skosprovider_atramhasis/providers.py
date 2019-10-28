@@ -293,9 +293,14 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @staticmethod
-    def _get_sort_params(**kwargs):
-        return {'sort': kwargs.get('sort', None)} or {}
+    def _get_sort_params(self, **kwargs):
+        if 'sort' in kwargs:
+            sort = kwargs.get('sort')
+            sort_order = kwargs.get('sort_order', 'asc')
+            if kwargs.get('sort_order', 'asc') == 'desc':
+                sort = '-' + sort
+            return {'sort': sort}
+        return {}
 
     def _request(self, request, headers=None, params=None):
         try:
