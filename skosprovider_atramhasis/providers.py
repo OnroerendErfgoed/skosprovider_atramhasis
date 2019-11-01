@@ -5,7 +5,7 @@ for Atramhasis
 '''
 
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 
 import logging
 from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
@@ -66,7 +66,9 @@ class AtramhasisProvider(VocabularyProvider):
         request = self.base_url + '/conceptschemes/' + self.scheme_id
         response = self._request(request, {'Accept': 'application/json'}, dict())
         if response.status_code == 404:
-            raise RuntimeError("Conceptscheme not found for scheme_id: %s" % self.scheme_id)
+            raise ProviderUnavailableException(
+                "Conceptscheme %s not found. Check your configuration." % request
+            )
         cs = response.json()
         return ConceptScheme(
             cs['uri'],
@@ -291,15 +293,27 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @staticmethod
-    def _get_sort_params(**kwargs):
-        return {'sort': kwargs.get('sort', None)} or {}
+    def _get_sort_params(self, **kwargs):
+        if 'sort' in kwargs:
+            sort = kwargs.get('sort')
+            sort_order = kwargs.get('sort_order', 'asc')
+            if kwargs.get('sort_order', 'asc') == 'desc':
+                sort = '-' + sort
+            return {'sort': sort}
+        return {}
 
     def _request(self, request, headers=None, params=None):
         try:
             res = self.session.get(request, headers=headers, params=params)
-        except ConnectionError as e:
-            raise ProviderUnavailableException("Request could not be executed - Request: %s" % (request,))
+        except ConnectionError:
+            raise ProviderUnavailableException("Request could not be executed \
+                    due to connection issues- Request: %s" % (request,))
+        except Timeout: # pragma: no cover
+            raise ProviderUnavailableException("Request could not be executed \
+                    due to timeout - Request: %s" % (request,))
+        if res.status_code >= 500:
+            raise ProviderUnavailableException("Request could not be executed \
+                    due to server issues - Request: %s" % (request,))
         if not res.encoding:
             res.encoding = 'utf-8'
         return res
