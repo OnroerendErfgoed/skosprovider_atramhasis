@@ -22,19 +22,24 @@ class AtramhasisProvider(VocabularyProvider):
     """
 
     base_url = None
+    '''Base URL of an Atramhasis instance.'''
 
     scheme_id = None
+    '''Identifier of the ConceptScheme this provider is managing.'''
 
     session = None
+    '''
+    The :class:`requests.Session` being used to make HTTP requests.
+    '''
 
     def __init__(self, metadata, **kwargs):
-        """ Constructor of the :class:`skosprovider_atramhasis.providers.AtramhasisProvider`
+        """Create a new AtramhasisProvider
 
         :param (dict) metadata: metadata of the provider
         :param kwargs: arguments defining the provider.
-            * Typical argument is `base_url`, `scheme_id`
-            * The :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
-                is the default :class:`skosprovider_Atramhasis.providers.AtramhasisProvider`
+            * `base_url` and `scheme_id` are required.
+            * `session` is optional and can be used to pass a custom
+                :class:`requests.Session`, eg. to configure caching strategies.
         """
 
         if not 'subject' in metadata:
@@ -92,11 +97,6 @@ class AtramhasisProvider(VocabularyProvider):
         )
 
     def get_by_id(self, id):
-        """ Get a :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection` by id
-
-        :param (str) id: integer id of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
-        :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
-        """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
@@ -105,11 +105,6 @@ class AtramhasisProvider(VocabularyProvider):
         return answer
 
     def get_by_uri(self, uri):
-        """ Get a :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection` by uri
-
-        :param (str) uri: string uri of the :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`
-        :return: corresponding :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Concept`.
-        """
         request = self.base_url + "/uris"
         params = {'uri': uri}
         response = self._request(request, {'Accept': 'application/json'}, params)
@@ -120,62 +115,6 @@ class AtramhasisProvider(VocabularyProvider):
         return self.get_by_id(response.json()['id'])
 
     def find(self, query, **kwargs):
-        '''Find concepts that match a certain query.
-
-        Currently query is expected to be a dict, so that complex queries can
-        be passed. You can use this dict to search for concepts or collections
-        with a certain label, with a certain type and for concepts that belong
-        to a certain collection.
-
-        .. code-block:: python
-
-            # Find anything that has a label of church.
-            provider.find({'label': 'church'}
-
-            # Find all concepts that are a part of collection 5.
-            provider.find({'type': 'concept', 'collection': {'id': 5})
-
-            # Find all concepts, collections or children of these
-            # that belong to collection 5.
-            provider.find({'collection': {'id': 5, 'depth': 'all'})
-
-        :param query: A dict that can be used to express a query. The following
-            keys are permitted:
-
-            * `label`: Search for something with this label value. An empty \
-                label is equal to searching for all concepts.
-            * `type`: Limit the search to certain SKOS elements. If not \
-                present `all` is assumed:
-
-                * `concept`: Only return :class:`skosprovider.skos.Concept` \
-                    instances.
-                * `collection`: Only return \
-                    :class:`skosprovider.skos.Collection` instances.
-                * `all`: Return both :class:`skosprovider.skos.Concept` and \
-                    :class:`skosprovider.skos.Collection` instances.
-            * `collection`: Search only for concepts belonging to a certain \
-                collection. This argument should be a dict with two keys:
-
-                * `id`: The id of a collection. Required.
-                * `depth`: Can be `members` or `all`. Optional. If not \
-                    present, `members` is assumed, meaning only concepts or \
-                    collections that are a direct member of the collection \
-                    should be considered. When set to `all`, this method \
-                    should return concepts and collections that are a member \
-                    of the collection or are a narrower concept of a member \
-                    of the collection.
-
-        :returns: A :class:`lst` of concepts and collections. Each of these
-            is a dict with the following keys:
-
-            * id: id within the conceptscheme
-            * uri: :term:`uri` of the concept or collection
-            * type: concept or collection
-            * label: A label to represent the concept or collection. It is \
-                determined by looking at the `**kwargs` parameter, the default \
-                language of the provider and finally falls back to `en`.
-        '''
-
         # interprete and validate query parameters
 
         params = {}
@@ -217,18 +156,6 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     def get_all(self, **kwargs):
-        '''Returns all concepts and collections in this provider.
-
-        :returns: A :class:`lst` of concepts and collections. Each of these is a dict
-            with the following keys:
-
-            * id: id within the conceptscheme
-            * uri: :term:`uri` of the concept or collection
-            * type: concept or collection
-            * label: A label to represent the concept or collection. It is \
-                determined by looking at the `**kwargs` parameter, the default \
-                language of the provider and finally falls back to `en`.
-        '''
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
         params['language'] = self._get_language(**kwargs)
@@ -239,10 +166,6 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     def get_top_concepts(self, **kwargs):
-        """  Returns all concepts that form the top-level of a display hierarchy.
-
-        :return: A :class:`lst` of concepts.
-        """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
         params['language'] = self._get_language(**kwargs)
@@ -253,9 +176,6 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     def get_top_display(self, **kwargs):
-        """  Returns all concepts or collections that form the top-level of a display hierarchy.
-        :return: A :class:`lst` of concepts and collections.
-        """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
         params['language'] = self._get_language(**kwargs)
@@ -266,11 +186,6 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     def get_children_display(self, id, **kwargs):
-        """ Return a list of concepts or collections that should be displayed under this concept or collection.
-
-        :param str id: A concept or collection id.
-        :returns: A :class:`lst` of concepts and collections.
-        """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
         params['language'] = self._get_language(**kwargs)
@@ -281,13 +196,6 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     def expand(self, id):
-        """ Expand a concept or collection to all it's narrower concepts.
-            If the id passed belongs to a :class:`skosprovider.skos.Concept`,
-            the id of the concept itself should be include in the return value.
-
-        :param str id: A concept or collection id.
-        :returns: A :class:`lst` of id's. Returns false if the input id does not exists
-        """
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code != 200:
