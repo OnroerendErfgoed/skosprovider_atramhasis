@@ -192,20 +192,32 @@ def init_responses():
     status=404,
     content_type='application/json')
 
-    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1',
-    body='{"id": 1,"type": "concept","concept_scheme": {"id": "STYLES", "uri": "http://localhost/conceptschemes/STYLES"},"uri": "http://localhost/conceptschemes/STYLES/c/1"}',
-    status=200,
-    content_type='application/json')
+    responses.add(
+        responses.GET,
+        'http://localhost/uris?uri=http://localhost/conceptschemes/STYLES/c/1',
+        match_querystring=True,
+        body='{"id": 1,"type": "concept","concept_scheme": {"id": "STYLES", "uri": "http://localhost/conceptschemes/STYLES"},"uri": "http://localhost/conceptschemes/STYLES/c/1"}',
+        status=200,
+        content_type='application/json'
+    )
 
-    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1234',
-    body='{"id": 1,"type": "concept","concept_scheme": {"id": "STIJLEN", "uri": "http://localhost/conceptschemes/STIJLEN"},"uri": "http://localhost/conceptschemes/STYLES/c/1234"}',
-    status=200,
-    content_type='application/json')
+    responses.add(
+        responses.GET,
+        'http://localhost/uris?uri=http://localhost/conceptschemes/STYLES/c/1234',
+        match_querystring=True,
+        body='{"id": 1,"type": "concept","concept_scheme": {"id": "STIJLEN", "uri": "http://localhost/conceptschemes/STIJLEN"},"uri": "http://localhost/conceptschemes/STYLES/c/1234"}',
+        status=200,
+        content_type='application/json'
+    )
 
-    responses.add(responses.GET, 'http://localhost/uris/http://localhost/conceptschemes/STYLES/c/1234567',
-    body='{"message": "The resource could not be found."}',
-    status=404,
-    content_type='application/json')
+    responses.add(
+        responses.GET,
+        'http://localhost/uris?uri=http://localhost/conceptschemes/STYLES/c/1234567',
+        match_querystring=True,
+        body='{"message": "The resource could not be found."}',
+        status=404,
+        content_type='application/json'
+    )
 
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES',
     body='{"uri": "https://id.erfgoed.net/thesauri/stijlen_en_culturen", "label": "Styles and Cultures", "notes": [], "sources": [], "languages": [], "id": "STYLES", "labels": [{"type": "prefLabel", "label": "Stijlen en Culturen", "language": "nl"}, {"type": "prefLabel", "label": "Styles and Cultures", "language": "en"}], "subject": []}',

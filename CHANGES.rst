@@ -1,7 +1,14 @@
+0.2.1 (2019-11-13)
+------------------
+
+- Update supported Python version (#61)
+- Add a long_description_content_type (#55)
+- Correct handling of get_by_uri (#69)
+
 0.2.0 (2017-08-24)
 ------------------
 
-- Update to skosprovider 0.6.1:
+- Update to skosprovider 0.6.1
 - Allow Notes with HTML (#17)
 - Add languages to Conceptscheme (#18)
 - Add sources to Conceptscheme, Collection and Concept (#19)
