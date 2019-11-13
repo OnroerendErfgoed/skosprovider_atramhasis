@@ -36,6 +36,13 @@ class UtilsTests(unittest.TestCase):
         self.assertEqual(concept.type, "concept")
         self.assertEqual(concept.uri, self.concept['uri'])
 
+    def test_dict_to_thing_concept_can_still_call_label(self):
+        concept = dict_to_thing(self.concept)
+
+        label = concept.label()
+
+        self.assertEqual(label.label, 'The Chestnut')
+
     def test_dict_to_thing_concept_return(self):
         concept = Concept("uri", "scheme")
         concept_2 = dict_to_thing(concept)

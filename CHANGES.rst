@@ -2,7 +2,12 @@
 ------------------
 
 - Update to skosprovider 0.7.0
+
+0.2.1 (2019-11-13)
+------------------
+
 - Update supported Python version (#61)
+- Add a long_description_content_type (#55)
 - Correct handling of get_by_uri (#69)
 
 0.2.0 (2017-08-24)
