@@ -2,6 +2,7 @@
 ------------------
 
 - Update supported Python version (#61)
+- Add a long_description_content_type (#55)
 
 0.2.0 (2017-08-24)
 ------------------
