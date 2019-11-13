@@ -13,12 +13,12 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.7.0',
+    'skosprovider>=0.6.0',
     'requests'
 ]
 setup(
     name='skosprovider_atramhasis',
-    version='0.3.0',
+    version='0.2.1',
     description='Skosprovider implementation of Atramhasis Vocabularies',
     long_description=README,
     packages=packages,
