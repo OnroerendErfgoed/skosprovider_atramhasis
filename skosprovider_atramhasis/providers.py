@@ -205,7 +205,6 @@ class AtramhasisProvider(VocabularyProvider):
     def _get_sort_params(self, **kwargs):
         if 'sort' in kwargs:
             sort = kwargs.get('sort')
-            sort_order = kwargs.get('sort_order', 'asc')
             if kwargs.get('sort_order', 'asc') == 'desc':
                 sort = '-' + sort
             return {'sort': sort}
