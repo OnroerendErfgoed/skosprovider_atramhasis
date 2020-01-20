@@ -1,13 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import functools
 import unittest
 from contextlib import contextmanager
 
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.skos import (
     ConceptScheme,
-    Collection,
     Concept
 )
 
@@ -16,7 +14,6 @@ import responses
 from skosprovider_atramhasis.providers import (
     AtramhasisProvider
 )
-from skosprovider_atramhasis.providers import atramhasis_region
 from tests import init_responses
 
 import pytest
@@ -521,9 +518,8 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         assert response.encoding == "utf-8"
 
 
-
 @contextmanager
-def real_cache():
+def real_cache(provider):
     """Enables the cache for the duration of the context.
 
     Caching is usually not desirable during testing, but this will turn it on
@@ -535,12 +531,12 @@ def real_cache():
            code
     """
     try:
-        atramhasis_region.configure('dogpile.cache.memory',
-                                    replace_existing_backend=True)
+        provider.caches['cache'].configure('dogpile.cache.memory',
+                                           replace_existing_backend=True)
         yield
     finally:
-        atramhasis_region.configure('dogpile.cache.null',
-                                    replace_existing_backend=True)
+        provider.caches['cache'].configure('dogpile.cache.null',
+                                           replace_existing_backend=True)
 
 
 class CacheTests(unittest.TestCase):
@@ -574,7 +570,7 @@ class CacheTests(unittest.TestCase):
                 for scheme in schemes
             )
 
-            with real_cache():
+            with real_cache(provider1), real_cache(provider2):
                 # Both request the same ID.
                 thesaurus_calls = len(rsps.calls)
                 result_1 = provider1.get_by_id('1')
@@ -622,7 +618,7 @@ class CacheTests(unittest.TestCase):
                                    scheme_id=scheme)
                 for url in urls
             )
-            with real_cache():
+            with real_cache(provider1), real_cache(provider2):
                 # Both request the same ID.
                 thesaurus_calls = len(rsps.calls)
                 result_1 = provider1.get_by_id('1')

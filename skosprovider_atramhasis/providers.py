@@ -3,6 +3,7 @@
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis
 '''
+import functools
 import json
 import logging
 
@@ -19,13 +20,13 @@ from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
 log = logging.getLogger(__name__)
 
 
-def create_atramhasis_key(namespace, fn, to_str=compat.string_type):
+def _atramhasis_key_generator(namespace, fn, to_str=compat.string_type):
     """
     This is mostly a copy of dogpile.cache.util.function_key_generator.
 
     The main difference is that it adds the provider's `base_url` and
     `scheme_id` as part of the cache key, so that different providers
-    don't use each other's caches.
+    don't use each other's caches. As well as we try and handle kwargs.
     """
     if namespace is None:
         namespace = '%s:%s' % (fn.__module__, fn.__name__)
@@ -40,7 +41,7 @@ def create_atramhasis_key(namespace, fn, to_str=compat.string_type):
     return generate_key
 
 
-def dont_cache_false(value):
+def _dont_cache_false(value):
     """
     Returns True when the value should be cached.
 
@@ -50,7 +51,19 @@ def dont_cache_false(value):
     return value is not False
 
 
-atramhasis_region = make_region(function_key_generator=create_atramhasis_key)
+def _cache_on_arguments(cache_name, expiration_time=None):
+    def decorator(fn):
+        key_generator = _atramhasis_key_generator(None, fn)
+
+        @functools.wraps(fn)
+        def wrapped(*args, **kwargs):
+            self = args[0]
+            key = key_generator(*args, **kwargs)
+            return self.caches[cache_name].get_or_create(
+                key, fn, expiration_time, _dont_cache_false, (args, kwargs)
+            )
+        return wrapped
+    return decorator
 
 
 class AtramhasisProvider(VocabularyProvider):
@@ -76,8 +89,8 @@ class AtramhasisProvider(VocabularyProvider):
             * `base_url` and `scheme_id` are required.
             * `session` is optional and can be used to pass a custom
                 :class:`requests.Session`, eg. to configure caching strategies.
-            * cache_config is a optional dict. Only keys starting with
-                "skosprovider.atramhasis.cache" are relevant.
+            * `cache_config` is an optional dict. Only keys starting with
+                "cache." are relevant.
         """
 
         if not 'subject' in metadata:
@@ -101,13 +114,16 @@ class AtramhasisProvider(VocabularyProvider):
         else:
             self.session = requests.Session()
 
-        if not atramhasis_region.is_configured:
-            atramhasis_region.configure_from_config(
+        self.caches = {
+            'cache': make_region(function_key_generator=_atramhasis_key_generator)
+        }
+        if not self.caches['cache'].is_configured:
+            self.caches['cache'].configure_from_config(
                 kwargs.get(
                     'cache_config',
-                    {'skosprovider.atramhasis.cache.backend': 'dogpile.cache.null'}
+                    {'cache.backend': 'dogpile.cache.null'}
                 ),
-                prefix='skosprovider.atramhasis.cache.'
+                prefix='cache.'
             )
 
     @property
@@ -143,7 +159,7 @@ class AtramhasisProvider(VocabularyProvider):
             languages=cs['languages']
         )
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_by_id(self, id):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
@@ -152,7 +168,7 @@ class AtramhasisProvider(VocabularyProvider):
         answer = dict_to_thing(response.json())
         return answer
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_by_uri(self, uri):
         request = self.base_url + "/uris"
         params = {'uri': uri}
@@ -163,7 +179,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return self.get_by_id(response.json()['id'])
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def find(self, query, **kwargs):
         # interprete and validate query parameters
 
@@ -205,7 +221,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_all(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
@@ -216,7 +232,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_top_concepts(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
@@ -227,7 +243,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_top_display(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
@@ -238,7 +254,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def get_children_display(self, id, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
@@ -249,7 +265,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
-    @atramhasis_region.cache_on_arguments(should_cache_fn=dont_cache_false)
+    @_cache_on_arguments(cache_name='cache')
     def expand(self, id):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept': 'application/json'})
