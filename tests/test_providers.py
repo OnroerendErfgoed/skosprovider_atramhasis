@@ -19,7 +19,7 @@ from tests import init_responses
 import pytest
 
 
-@unittest.skip("Tests that use the attramhasis-demo are skipped by default to avoid dependencies.")
+@unittest.skip("Tests that use the OE thesaurus are skipped by default to avoid dependencies.")
 class AtramhasisProviderDemoTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -30,149 +30,130 @@ class AtramhasisProviderDemoTests(unittest.TestCase):
         *id of a concept in scheme_id
         *id of a collection in scheme_id
         """
-        cls.base_url = 'http://glacial-bastion-1106.herokuapp.com'
-        cls.scheme_id = 'TREES'
+        cls.base_url = 'https://thesaurus.onroerenderfgoed.be'
+        cls.scheme_id = 'ERFGOEDTYPES'
         cls.concept_id = 1
-        cls.concept_uri = 'urn:x-skosprovider:trees/1'
-        cls.collection_id = 3
-        cls.collection_uri = 'urn:x-skosprovider:trees/3'
+        cls.concept_uri = 'https://id.erfgoed.net/thesauri/erfgoedtypes/1'
+        cls.collection_id = 2132
+        cls.collection_uri = 'https://id.erfgoed.net/thesauri/erfgoedtypes/2132'
 
     def test_get_top_concepts_provider(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id)
-        self.assertGreater(len(provider.get_top_concepts()), 0)
+        provider = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id)
+        assert len(provider.get_top_concepts()) > 0
 
     def test_get_by_id_concept(self):
-        c = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id(self.concept_id)
-        c = c.__dict__
-        self.assertEqual(c['uri'], self.concept_uri)
-        self.assertEqual(c['type'], 'concept')
-        self.assertIsInstance(c['labels'], list)
+        c = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id(self.concept_id)
+        assert c.uri ==  self.concept_uri
+        assert c.type == 'concept'
 
     def test_get_by_id_collection(self):
-        c = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id(self.collection_id)
-        c = c.__dict__
-        self.assertEqual(c['uri'], self.collection_uri)
-        self.assertEqual(c['type'], 'collection')
-        self.assertIsInstance(c['labels'], list)
+        c = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id(self.collection_id)
+        assert c.uri == self.collection_uri
+        assert c.type == 'collection'
 
     def test_get_by_id_nonexistant_id(self):
-        c = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id('-1')
-        self.assertFalse(c)
+        c = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_id('-1')
+        assert not c
 
     def test_get_by_uri_concept(self):
-        c = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_uri(self.concept_uri)
-        c = c.__dict__
-        self.assertEqual(c['uri'], self.concept_uri)
-        self.assertEqual(c['id'], self.concept_id)
+        c = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_uri(self.concept_uri)
+        assert c.uri ==  self.concept_uri
+        assert c.type == 'concept'
 
     def test_get_by_uri_collection(self):
-        c = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_uri(self.collection_uri)
-        c = c.__dict__
-        self.assertEqual(c['uri'], self.collection_uri)
-        self.assertEqual(c['id'], self.collection_id)
+        c = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).get_by_uri(self.collection_uri)
+        assert c.uri == self.collection_uri
+        assert c.id == self.collection_id
+        assert c.type == 'collection'
 
     def test_get_all(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id)
-        self.assertGreater(len(provider.get_all()), 0)
+        provider = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id)
+        assert len(provider.get_all()) > 0
 
     def test_get_top_display(self):
-        top_atramhasis_display = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url,
+        top_atramhasis_display = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url,
                                                     scheme_id=self.scheme_id).get_top_display()
-        self.assertIsInstance(top_atramhasis_display, list)
-        self.assertGreater(len(top_atramhasis_display), 0)
+        assert len(top_atramhasis_display) > 0
         keys_first_display = top_atramhasis_display[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
+            assert key in keys_first_display
 
     def test_get_top_concepts(self):
-        top_atramhasis_concepts = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url,
+        top_atramhasis_concepts = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url,
                                                      scheme_id=self.scheme_id).get_top_concepts()
-        self.assertIsInstance(top_atramhasis_concepts, list)
-        self.assertGreater(len(top_atramhasis_concepts), 0)
+        assert len(top_atramhasis_concepts) > 0
 
     def test_get_childeren_display(self):
-        childeren_atramhasis = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url,
+        childeren_atramhasis = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url,
                                                   scheme_id=self.scheme_id).get_children_display(self.collection_id)
-        self.assertIsInstance(childeren_atramhasis, list)
-        self.assertGreater(len(childeren_atramhasis), 0)
+        assert len(childeren_atramhasis) > 0
         keys_first_display = childeren_atramhasis[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
+            assert key in keys_first_display
 
-    def test_find_404(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
-            {'type': 'concept', 'collection': {'id': '-1', 'depth': 'all'}})
-        self.assertFalse(r)
-        self.assertRaises(Exception, AtramhasisProvider, {'id': 'Atramhasis'}, base_url=self.base_url,
-                          scheme_id='ONBEKEND')
+    def test_unexisting_scheme(self):
+        with pytest.raises(ProviderUnavailableException):
+            cs = AtramhasisProvider(
+                {'id': 'ERFGOEDTYPES'},
+                base_url=self.base_url,
+                scheme_id='ONBEKEND'
+            ).concept_scheme
 
     def test_find_with_collection_all(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
+        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
             {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'all'}})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        assert len(r) > 0
         keys_first_display = r[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
+            assert key in keys_first_display
         for res in r:
-            self.assertEqual(res['type'], 'concept')
+            assert res['type'] == 'concept'
 
     def test_find_with_collection_invalid_params(self):
-        provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id)
+        provider = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id)
         self.assertRaises(ValueError, provider.find,
                           {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'very deep'}})
         self.assertRaises(ValueError, provider.find, {'type': 'concept', 'collection': {'depth': 'all'}})
 
-    def test_find_with_collection_members(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
-            {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'members'}})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+    def test_find_with_collection_all(self):
+        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
+            {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'all'}})
+        assert len(r) > 0
         keys_first_display = r[0].keys()
         for key in ['id', 'type', 'label', 'uri']:
-            self.assertIn(key, keys_first_display)
+            assert key in keys_first_display
         for res in r:
-            self.assertEqual(res['type'], 'concept')
+            assert res['type'] == 'concept'
 
     def test_find_collections(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
+        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
             {'type': 'collection'})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        assert len(r) > 0
         for res in r:
-            self.assertEqual(res['type'], 'collection')
+            assert res['type'] == 'collection'
 
     def test_find_all_concepts_collections(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
+        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
             {'type': 'all'})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
+        assert len(r) > 0
         for res in r:
-            self.assertIn(res['type'], ['collection', 'concept'])
-
-    def test_find_wrong_type(self):
-        self.assertRaises(ValueError,
-                          AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find,
-                          {'type': 'collectie'})
+            assert res['type'] in ['collection', 'concept']
 
     def test_find_keyword(self):
-        r = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
-            {'label': 'e', 'type': 'concept'})
-        self.assertIsInstance(r, list)
-        self.assertGreater(len(r), 0)
-        for res in r:
-            self.assertEqual(res['type'], 'concept')
+        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
+            {'label': 'aal', 'type': 'concept'})
+        assert len(r) > 0
+        for c in r:
+            assert c['type'] == 'concept'
 
     def test_expand(self):
-        all_childeren = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url, scheme_id=self.scheme_id).expand(self.collection_id)
-        self.assertIsInstance(all_childeren, list)
-        self.assertGreater(len(all_childeren), 0)
-        self.assertIn(self.concept_id, all_childeren)
+        expand = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).expand(self.collection_id)
+        assert len(expand) > 0
 
     def test_expand_invalid(self):
-        all_childeren_invalid = AtramhasisProvider({'id': 'Atramhasis'}, base_url=self.base_url,
+        all_childeren_invalid = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url,
                                                    scheme_id=self.scheme_id).expand('-1')
-        self.assertFalse(all_childeren_invalid)
+        assert not all_childeren_invalid
 
 
 class AtramhasisProviderMockTests(unittest.TestCase):
