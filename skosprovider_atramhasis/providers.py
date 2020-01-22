@@ -3,67 +3,20 @@
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis
 '''
-import functools
-import json
 import logging
 
 import requests
 from requests.exceptions import ConnectionError, Timeout
 from dogpile.cache import make_region
-from dogpile.util import compat
 
+from skosprovider_atramhasis.cache_utils import _atramhasis_key_generator
+from skosprovider_atramhasis.cache_utils import _cache_on_arguments
 from skosprovider_atramhasis.utils import dict_to_thing
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
 from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
 
 log = logging.getLogger(__name__)
-
-
-def _atramhasis_key_generator(namespace, fn, to_str=compat.string_type):
-    """
-    This is mostly a copy of dogpile.cache.util.function_key_generator.
-
-    The main difference is that it adds the provider's `base_url` and
-    `scheme_id` as part of the cache key, so that different providers
-    don't use each other's caches. As well as we try and handle kwargs.
-    """
-    if namespace is None:
-        namespace = '%s:%s' % (fn.__module__, fn.__name__)
-    else:
-        namespace = '%s:%s|%s' % (fn.__module__, fn.__name__, namespace)
-
-    def generate_key(*args, **kwargs):
-        provider = args[0]
-        args = ([provider.base_url, provider.scheme_id]
-                + list(args[1:]) + [json.dumps(kwargs, sort_keys=True)])
-        return namespace + "|" + " ".join(map(to_str, args))
-    return generate_key
-
-
-def _dont_cache_false(value):
-    """
-    Returns True when the value should be cached.
-
-    Because the provider can return False in error cases, we must prevent False
-    from being cached by dogpile.
-    """
-    return value is not False
-
-
-def _cache_on_arguments(cache_name, expiration_time=None):
-    def decorator(fn):
-        key_generator = _atramhasis_key_generator(None, fn)
-
-        @functools.wraps(fn)
-        def wrapped(*args, **kwargs):
-            self = args[0]
-            key = key_generator(*args, **kwargs)
-            return self.caches[cache_name].get_or_create(
-                key, fn, expiration_time, _dont_cache_false, (args, kwargs)
-            )
-        return wrapped
-    return decorator
 
 
 class AtramhasisProvider(VocabularyProvider):
@@ -115,7 +68,7 @@ class AtramhasisProvider(VocabularyProvider):
             self.session = requests.Session()
 
         self.caches = {
-            'cache': make_region(function_key_generator=_atramhasis_key_generator)
+            'cache': make_region()
         }
         if not self.caches['cache'].is_configured:
             self.caches['cache'].configure_from_config(
