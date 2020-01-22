@@ -3,18 +3,20 @@
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis
 '''
+import logging
 
 import requests
 from requests.exceptions import ConnectionError, Timeout
+from dogpile.cache import make_region
 
-import logging
-from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
+from skosprovider_atramhasis.cache_utils import _atramhasis_key_generator
+from skosprovider_atramhasis.cache_utils import _cache_on_arguments
 from skosprovider_atramhasis.utils import dict_to_thing
-
-log = logging.getLogger(__name__)
-
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
+from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
+
+log = logging.getLogger(__name__)
 
 
 class AtramhasisProvider(VocabularyProvider):
@@ -40,6 +42,8 @@ class AtramhasisProvider(VocabularyProvider):
             * `base_url` and `scheme_id` are required.
             * `session` is optional and can be used to pass a custom
                 :class:`requests.Session`, eg. to configure caching strategies.
+            * `cache_config` is an optional dict. Only keys starting with
+                "cache." are relevant.
         """
 
         if not 'subject' in metadata:
@@ -62,6 +66,18 @@ class AtramhasisProvider(VocabularyProvider):
             self.session = kwargs['session']
         else:
             self.session = requests.Session()
+
+        self.caches = {
+            'cache': make_region()
+        }
+        if not self.caches['cache'].is_configured:
+            self.caches['cache'].configure_from_config(
+                kwargs.get(
+                    'cache_config',
+                    {'cache.backend': 'dogpile.cache.null'}
+                ),
+                prefix='cache.'
+            )
 
     @property
     def concept_scheme(self):
@@ -96,6 +112,7 @@ class AtramhasisProvider(VocabularyProvider):
             languages=cs['languages']
         )
 
+    @_cache_on_arguments(cache_name='cache')
     def get_by_id(self, id):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id)
         response = self._request(request, {'Accept': 'application/json'})
@@ -104,6 +121,7 @@ class AtramhasisProvider(VocabularyProvider):
         answer = dict_to_thing(response.json())
         return answer
 
+    @_cache_on_arguments(cache_name='cache')
     def get_by_uri(self, uri):
         request = self.base_url + "/uris"
         params = {'uri': uri}
@@ -114,6 +132,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return self.get_by_id(response.json()['id'])
 
+    @_cache_on_arguments(cache_name='cache')
     def find(self, query, **kwargs):
         # interprete and validate query parameters
 
@@ -155,6 +174,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @_cache_on_arguments(cache_name='cache')
     def get_all(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
         params = dict()
@@ -165,6 +185,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @_cache_on_arguments(cache_name='cache')
     def get_top_concepts(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
         params = dict()
@@ -175,6 +196,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @_cache_on_arguments(cache_name='cache')
     def get_top_display(self, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
         params = dict()
@@ -185,6 +207,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @_cache_on_arguments(cache_name='cache')
     def get_children_display(self, id, **kwargs):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
         params = dict()
@@ -195,6 +218,7 @@ class AtramhasisProvider(VocabularyProvider):
             return False
         return response.json()
 
+    @_cache_on_arguments(cache_name='cache')
     def expand(self, id):
         request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
         response = self._request(request, {'Accept': 'application/json'})

@@ -1,12 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import unittest
+from contextlib import contextmanager
 
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.skos import (
     ConceptScheme,
-    Collection,
     Concept
 )
 
@@ -518,3 +517,123 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         response = provider._request("http://localhost/no_encoding")
         assert response.encoding == "utf-8"
 
+
+@contextmanager
+def real_cache(provider):
+    """Enables the cache for the duration of the context.
+
+    Caching is usually not desirable during testing, but this will turn it on
+    temporarily.
+
+    Usage:
+
+       with real_cache():
+           code
+    """
+    try:
+        provider.caches['cache'].configure('dogpile.cache.memory',
+                                           replace_existing_backend=True)
+        yield
+    finally:
+        provider.caches['cache'].configure('dogpile.cache.null',
+                                           replace_existing_backend=True)
+
+
+class CacheTests(unittest.TestCase):
+
+    def test_cached_unique_per_provider_scheme(self):
+        url = 'http://127.0.0.1/thesaurus'
+        schemes = ('GEBEURTENISTYPES', 'WAARDETYPES')
+        with responses.RequestsMock() as rsps:
+            for scheme in schemes:
+                rsps.add(
+                    method='GET',
+                    url=url + '/conceptschemes/' + scheme + '/c/1',
+                    json={
+                        "label": scheme.title() + " type 1",
+                        "id": 1,
+                        "type": "concept"
+                    })
+                rsps.add(
+                    method='GET',
+                    url=url + '/conceptschemes/' + scheme + '/c/2',
+                    json={
+                        "label": scheme.title() + " type 2",
+                        "id": 2,
+                        "type": "concept"
+                    })
+            # Create 2 different providers
+            provider1, provider2 = (
+                AtramhasisProvider({'id': scheme.lower(), 'default_language': 'nl'},
+                                   base_url=url,
+                                   scheme_id=scheme)
+                for scheme in schemes
+            )
+
+            with real_cache(provider1), real_cache(provider2):
+                # Both request the same ID.
+                thesaurus_calls = len(rsps.calls)
+                result_1 = provider1.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 1, len(rsps.calls))
+                result_2 = provider2.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 2, len(rsps.calls))
+                # Results must be different
+                self.assertNotEqual(result_1, result_2)
+
+                # Do 2 more identical calls, they should return from cache.
+                provider1.get_by_id('1')
+                provider2.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 2, len(rsps.calls))
+
+                # Do 2 other calls, they should not return from cache.
+                provider1.get_by_id('2')
+                provider2.get_by_id('2')
+                self.assertEqual(thesaurus_calls + 4, len(rsps.calls))
+
+    def test_cache_unique_per_url(self):
+        urls = ('http://127.0.0.1/thesaurus1', 'http://127.0.0.1/thesaurus2')
+        scheme = 'GEBEURTENISTYPES'
+        with responses.RequestsMock() as rsps:
+            for url in urls:
+                rsps.add(
+                    method='GET',
+                    url=url + '/conceptschemes/' + scheme + '/c/1',
+                    json={
+                        "label": scheme.title() + " type 1",
+                        "id": 1,
+                        "type": "concept"
+                    })
+                rsps.add(
+                    method='GET',
+                    url=url + '/conceptschemes/' + scheme + '/c/2',
+                    json={
+                        "label": scheme.title() + " type 2",
+                        "id": 2,
+                        "type": "concept"
+                    })
+            # Create 2 different providers
+            provider1, provider2 = (
+                AtramhasisProvider({'id': scheme.lower(), 'default_language': 'nl'},
+                                   base_url=url,
+                                   scheme_id=scheme)
+                for url in urls
+            )
+            with real_cache(provider1), real_cache(provider2):
+                # Both request the same ID.
+                thesaurus_calls = len(rsps.calls)
+                result_1 = provider1.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 1, len(rsps.calls))
+                result_2 = provider2.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 2, len(rsps.calls))
+                # Results must be different
+                self.assertNotEqual(result_1, result_2)
+
+                # Do 2 more identical calls, they should return from cache.
+                provider1.get_by_id('1')
+                provider2.get_by_id('1')
+                self.assertEqual(thesaurus_calls + 2, len(rsps.calls))
+
+                # Do 2 other calls, they should not return from cache.
+                provider1.get_by_id('2')
+                provider2.get_by_id('2')
+                self.assertEqual(thesaurus_calls + 4, len(rsps.calls))
