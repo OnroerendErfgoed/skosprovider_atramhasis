@@ -24,7 +24,9 @@ Installation
 ------------
 
 To be able to use this library you need to have a modern version of Python
-installed. Currently we're supporting versions 2.7, 3.3 and 3.4 of Python.
+installed. Currently we're supporting versions 2.7, and the last 3 versions of
+Python 3. Support for Python 2 is about to be removed though, so we advise
+going to Python 3 right away.
 
 This easiest way to install this library is through :command:`pip` or
 :command:`easy install`:
@@ -76,3 +78,27 @@ a detailed description of how this works.
 
 .. literalinclude:: ../../examples/expand.py
    :language: python
+
+Adding a cache
+--------------
+
+Skosprovider_atramhasis has to do a lot of HTTP requests. Depending on your use
+case, this might cause a lot of overhead. Therefor we've made it possible to
+add a `Dogpile cache <https://dogpilecache.sqlalchemy.org/en/latest/>_`. To
+configure the cache, simple add a `cache_config` key when instantiating the
+provider. This config will de passed to the Dogpile CacheRegion's
+configure_from_config method.
+
+.. literalinclude:: ../../examples/cache.py
+   :language: python
+
+.. _supported_thesauri:
+
+Supported thesauri
+------------------
+
+Currently the only known publically available backed is Flanders Heritage
+Ageny's own `thesaurus website <https://thesaurus.onroerenderfgoed.be>`_. It
+offers a range of thesauri dealing with cultural heritage in general and
+specifically in Flanders. Examples are a thesaurus of heritage types, a
+thesaurus of cultures and periods, a thesaurus of heritage even types, ...

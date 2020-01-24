@@ -1,4 +1,4 @@
-0.3.0 (2019-01-??)
+0.3.0 (2020-01-??)
 ------------------
 
 - Update to `Skosprovider 0.7.0 <https://pypi.org/project/skosprovider/0.7.0/>`_.
