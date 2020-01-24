@@ -1,11 +1,11 @@
-0.3.0 (2020-01-??)
+0.3.0 (2020-01-24)
 ------------------
 
 - Update to `Skosprovider 0.7.0 <https://pypi.org/project/skosprovider/0.7.0/>`_.
 - Add caching support to the provider. (#75)
 - Don't load concepscheme at startup, since this prevents the provider from
   instantiating when an Atramhasis instance is down. (#66)
-- This is the last version to support Python 2.7. Update Python 3 support to
+- This is the last version to support Python 2.7. Updated Python 3 support to
   3.6, 3.7 and 3.8.
 
 0.2.1 (2019-11-13)
