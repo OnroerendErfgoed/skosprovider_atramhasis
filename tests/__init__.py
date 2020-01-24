@@ -31,6 +31,12 @@ def init_responses():
     status=200,
     content_type='application/json; charset=UTF-8')
 
+    responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en&sort=id',
+    match_querystring=True,
+    body='[{"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}]',
+    status=200,
+    content_type='application/json; charset=UTF-8')
+
     responses.add(responses.GET, 'http://localhost/conceptschemes/STYLES/c/?type=collection&language=en&sort=-id',
     match_querystring=True,
     body='[{"label": "culturen uit de metaaltijden", "type": "collection", "id": 63, "uri": "urn:x-vioe:styles:63"}, {"label": "culturen uit de steentijd", "type": "collection", "id": 62, "uri": "urn:x-vioe:styles:62"}, {"label": "culturen", "type": "collection", "id": 61, "uri": "urn:x-vioe:styles:61"}, {"label": "stijlen", "type": "collection", "id": 60, "uri": "urn:x-vioe:styles:60"}, {"label": "Stijlen en culturen", "type": "collection", "id": 0, "uri": "urn:x-vioe:styles:0"}]',
@@ -234,14 +240,34 @@ def init_responses():
     status=200,
     content_type='application/json')
 
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES',
+    body='{"notes": [], "labels": [], "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes", "label": "Erfgoedtypes", "id": "ERFGOEDTYPES", "subject": [], "sources": [], "languages": []}',
+    status=200,
+    content_type='application/json; charset=UTF-8')
 
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES/c/?language=en&match=http%3A%2F%2Fvocab.getty.edu%2Faat%2F300004983',
+        match_querystring=True,
+        body='[{"label": "veekralen", "type": "concept", "id": 1314, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/1314"}]',
+        content_type='application/json'
+    )
 
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES/c/?language=en&match=http%3A%2F%2Fvocab.getty.edu%2Faat%2F300004983&match_type=close',
+        match_querystring=True,
+        body='[{"label": "veekralen", "type": "concept", "id": 1314, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/1314"}]',
+        content_type='application/json'
+    )
 
-
-
-
-
-
-
-
-
+    responses.add(
+        responses.GET,
+        'http://localhost/conceptschemes/ERFGOEDTYPES/c/?type=concept&collection=2132&language=en',
+        match_querystring=True,
+        body='[{"label": "paleobodems", "type": "concept", "id": 2057, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/2057"}, {"label": "organische bodems", "type": "concept", "id": 2040, "uri": "https://id.erfgoed.net/thesauri/erfgoedtypes/2040"}]',
+        status=200,
+        content_type='application/json'
+    )

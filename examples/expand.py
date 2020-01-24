@@ -5,13 +5,17 @@ This script demonstrates using the AtramhasisProvider to expand a concept
 '''
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
-from tests import init_responses
 
 
 def main():
-    #you can adapt this example by using the base_url of another atramhasis-instance and provide an available scheme_id and the id within this concept scheme to expand
-    provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://glacial-bastion-1106.herokuapp.com', scheme_id='TREES')
-    id = 3
+    # you can adapt this example by using the base_url of another
+    # atramhasis-instance and provide an available scheme_id and the id
+    # within this concept scheme to expand
+    provider = AtramhasisProvider(
+        {'id': 'vioe-erfgoedtypes)'},
+        base_url='https://thesaurus.onroerenderfgoed.be',
+        scheme_id='ERFGOEDTYPES')
+    id = 63 # Id for auxiliary buildings
 
     results = provider.expand(id)
 
@@ -22,5 +26,4 @@ def main():
 
 
 if __name__ == "__main__":
-    init_responses()
     main()
