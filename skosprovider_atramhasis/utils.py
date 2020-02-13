@@ -32,10 +32,10 @@ def text_(s, encoding='latin-1', errors='strict'):
 def dict_to_thing(dict):
     '''
     Transform a dict into a
-    :class:`Concept` or :class:`Collection` .
+    :class:`skosprovider.skos.Concept` or :class:`skosprovider.skos.Collection` .
 
-    If the argument passed is already a :class:`Concept` or :class:`Collection`, this method just
-    returns the argument.
+    If the argument passed is already a :class:`skosprovider.skos.Concept` or
+    :class:`skosprovider.skos.Collection`, this method just returns the argument.
     '''
     if isinstance(dict, Concept) or isinstance(dict, Collection):
         return dict
@@ -85,5 +85,3 @@ def dict_to_thing(dict):
         if 'member_of' in dict:
             thing.member_of = [n['id'] for n in dict['member_of']]
         return thing
-
-
