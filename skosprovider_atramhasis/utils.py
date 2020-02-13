@@ -53,7 +53,7 @@ def dict_to_thing(dict):
         if type == 'concept':
             thing = Concept(id)
             if 'subordinate_arrays' in dict:
-                thing.subordinate_arrays = [(dict_to_thing(n)) for n in dict['subordinate_arrays']]
+                thing.subordinate_arrays = [n['id'] for n in dict['subordinate_arrays']]
             if 'matches' in dict:
                 matches = dict['matches']
                 for match_type in thing.matchtypes:
@@ -62,9 +62,9 @@ def dict_to_thing(dict):
         elif type == 'collection':
             thing = Collection(id)
             if 'superordinates' in dict:
-                thing.superordinates = [(dict_to_thing(n)) for n in dict['superordinates']]
+                thing.superordinates = [n['id'] for n in dict['superordinates']]
             if 'members' in dict:
-                thing.members = [(dict_to_thing(n)) for n in dict['members']]
+                thing.members = [n['id'] for n in dict['members']]
         else:
             raise ValueError("type: type is not valid ('concept', 'collection') in dict")
         thing.type = type
@@ -77,13 +77,13 @@ def dict_to_thing(dict):
         if 'sources' in dict:
             thing.sources = [(dict_to_source(n)) for n in dict['sources']]
         if 'narrower' in dict:
-            thing.narrower = [(dict_to_thing(n)) for n in dict['narrower']]
+            thing.narrower = [n['id'] for n in dict['narrower']]
         if 'broader' in dict:
-            thing.broader = [(dict_to_thing(n)) for n in dict['broader']]
+            thing.broader = [n['id'] for n in dict['broader']]
         if 'related' in dict:
-            thing.related = [(dict_to_thing(n)) for n in dict['related']]
+            thing.related = [n['id'] for n in dict['related']]
         if 'member_of' in dict:
-            thing.member_of = [(dict_to_thing(n)) for n in dict['member_of']]
+            thing.member_of = [n['id'] for n in dict['member_of']]
         return thing
 
 

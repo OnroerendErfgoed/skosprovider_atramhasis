@@ -221,6 +221,8 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         assert concept.type == 'concept'
         assert len(concept.labels) > 0
         assert 'traditioneel' in [l.label for l in concept.labels if l.type == 'prefLabel']
+        assert 2 in concept.narrower
+        assert 60 in concept.member_of
 
     @responses.activate
     def test_get_by_id_concept_matches(self):
@@ -234,6 +236,7 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         assert concept.type == 'concept'
         assert len(concept.labels) > 0
         assert 'The Chestnut' in [l.label for l in concept.labels if l.type == 'prefLabel']
+        assert 3 in concept.member_of
 
     @responses.activate
     def test_get_by_id_nonexistant_id(self):
