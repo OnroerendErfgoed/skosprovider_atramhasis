@@ -1,8 +1,8 @@
-0.3.1 (2020-02-??)
+0.3.1 (2020-02-19)
 ------------------
 
 - Fix a bug in `dict_to_thing` that resulted in the provider exposing objects
-  in stead of id's in relations. (#80)
+  instead of id's in relations. (#80)
 
 0.3.0 (2020-01-24)
 ------------------
