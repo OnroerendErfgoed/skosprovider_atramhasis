@@ -15,3 +15,9 @@ Utils module
 
 .. automodule:: skosprovider_atramhasis.utils
    :members:
+
+Cache_utils module
+------------------
+
+.. automodule:: skosprovider_atramhasis.cache_utils
+   :members:
