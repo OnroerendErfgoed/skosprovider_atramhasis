@@ -2,7 +2,7 @@
 --requirement requirements.txt
 
 # Documentation
-Sphinx==1.8.5 ; python_version < '3.5'
+Sphinx==3.1.1; python_version < '3.5'
 Sphinx==2.2.0 ; python_version >= '3.5'
 
 # Unit testing
