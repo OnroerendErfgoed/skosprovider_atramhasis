@@ -3,7 +3,7 @@
 
 # Documentation
 Sphinx==3.2.1; python_version < '3.5'
-Sphinx==2.2.0 ; python_version >= '3.5'
+Sphinx==3.2.1; python_version >= '3.5'
 
 # Unit testing
 tox==3.14.0
