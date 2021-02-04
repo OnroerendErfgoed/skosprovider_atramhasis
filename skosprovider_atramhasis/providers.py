@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis

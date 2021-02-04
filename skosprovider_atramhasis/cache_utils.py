@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Utility functions for chaching in :mod:`skosprovider_atramhasis`.
 """
@@ -18,9 +17,9 @@ def _atramhasis_key_generator(namespace, fn, to_str=compat.string_type):
     don't use each other's caches. As well as we try and handle kwargs.
     """
     if namespace is None:
-        namespace = '%s:%s' % (fn.__module__, fn.__name__)
+        namespace = f'{fn.__module__}:{fn.__name__}'
     else:
-        namespace = '%s:%s|%s' % (fn.__module__, fn.__name__, namespace)
+        namespace = f'{fn.__module__}:{fn.__name__}|{namespace}'
 
     def generate_key(*args, **kwargs):
         provider = args[0]
