@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
 import unittest
-from skosprovider.exceptions import ProviderUnavailableException
-from skosprovider.skos import Concept, Collection, ConceptScheme
 
-from skosprovider_atramhasis.utils import text_, dict_to_thing
+from skosprovider.skos import Collection
+from skosprovider.skos import Concept
+
+from skosprovider_atramhasis.utils import dict_to_thing
+from skosprovider_atramhasis.utils import text_
 
 
 class UtilsTests(unittest.TestCase):
@@ -14,20 +15,21 @@ class UtilsTests(unittest.TestCase):
         self.concept_no_id = {}
         self.concept_no_type = {"id": 2}
         self.concept_invalid_type = {"id": 2, "type": "blabla"}
+
     def tearDown(self):
         pass
 
     def test_text(self):
         res = text_(b'test123')
-        self.assertEqual(u'test123', res)
+        self.assertEqual('test123', res)
 
     def test_text_unicode(self):
-        res = text_(u'test123')
-        self.assertEqual(u'test123', res)
+        res = text_('test123')
+        self.assertEqual('test123', res)
 
     def test_text_utf8(self):
         res = text_(b'LaPe\xc3\xb1a', 'utf-8')
-        self.assertEqual(u'LaPe\xf1a', res)
+        self.assertEqual('LaPe\xf1a', res)
 
     def test_dict_to_thing_concept(self):
         concept = dict_to_thing(self.concept)
