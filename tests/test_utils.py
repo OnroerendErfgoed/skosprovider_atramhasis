@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import unittest
-from skosprovider.exceptions import ProviderUnavailableException
-from skosprovider.skos import Concept, Collection, ConceptScheme
 
-from skosprovider_atramhasis.utils import text_, dict_to_thing
+from skosprovider.skos import Collection
+from skosprovider.skos import Concept
+
+from skosprovider_atramhasis.utils import dict_to_thing
+from skosprovider_atramhasis.utils import text_
 
 
 class UtilsTests(unittest.TestCase):
@@ -14,6 +16,7 @@ class UtilsTests(unittest.TestCase):
         self.concept_no_id = {}
         self.concept_no_type = {"id": 2}
         self.concept_invalid_type = {"id": 2, "type": "blabla"}
+
     def tearDown(self):
         pass
 

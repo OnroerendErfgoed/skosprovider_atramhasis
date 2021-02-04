@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Utility functions for chaching in :mod:`skosprovider_atramhasis`.
-'''
+"""
 
 import functools
 import json
