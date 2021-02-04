@@ -10,7 +10,7 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.7.0',
+    'skosprovider>=0.7.1',
     'requests',
     'dogpile.cache>=0.9.0',
 ]

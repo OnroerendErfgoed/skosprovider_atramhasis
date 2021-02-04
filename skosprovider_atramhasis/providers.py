@@ -50,6 +50,8 @@ class AtramhasisProvider(VocabularyProvider):
         """
         if 'subject' not in metadata:
             metadata['subject'] = []
+        if 'uri' not in metadata:
+            metadata['uri'] = f'{self.base_url}/conceptschemes/{self.scheme_id}'
         self.metadata = metadata
         self.allowed_instance_scopes = kwargs.get(
             'allowed_instance_scopes',
