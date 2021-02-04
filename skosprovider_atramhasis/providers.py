@@ -6,15 +6,18 @@ for Atramhasis
 import logging
 
 import requests
-from requests.exceptions import ConnectionError, Timeout
 from dogpile.cache import make_region
-
-from skosprovider_atramhasis.cache_utils import _atramhasis_key_generator
-from skosprovider_atramhasis.cache_utils import _cache_on_arguments
-from skosprovider_atramhasis.utils import dict_to_thing
+from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
-from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
+from skosprovider.skos import ConceptScheme
+from skosprovider.skos import Label
+from skosprovider.skos import Note
+from skosprovider.skos import dict_to_source
+
+from skosprovider_atramhasis.cache_utils import _cache_on_arguments
+from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
 
@@ -49,6 +52,7 @@ class AtramhasisProvider(VocabularyProvider):
         if not 'subject' in metadata:
             metadata['subject'] = []
         self.metadata = metadata
+        self._conceptscheme = None
         self.allowed_instance_scopes = kwargs.get(
             'allowed_instance_scopes',
             ['single', 'threaded_thread']
@@ -81,7 +85,9 @@ class AtramhasisProvider(VocabularyProvider):
 
     @property
     def concept_scheme(self):
-        return self._get_concept_scheme()
+        if self._conceptscheme is None:
+            self._conceptscheme = self._get_concept_scheme()
+        return self._conceptscheme
 
     def _get_concept_scheme(self):
         request = self.base_url + '/conceptschemes/' + self.scheme_id
