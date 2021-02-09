@@ -1,27 +1,28 @@
-# -*- coding: utf-8 -*-
-'''
+"""
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis
-'''
+"""
 import logging
 
 import requests
-from requests.exceptions import ConnectionError, Timeout
 from dogpile.cache import make_region
-
-from skosprovider_atramhasis.cache_utils import _atramhasis_key_generator
-from skosprovider_atramhasis.cache_utils import _cache_on_arguments
-from skosprovider_atramhasis.utils import dict_to_thing
+from requests.exceptions import ConnectionError
+from requests.exceptions import Timeout
 from skosprovider.exceptions import ProviderUnavailableException
 from skosprovider.providers import VocabularyProvider
-from skosprovider.skos import ConceptScheme, Label, Note, dict_to_source
+from skosprovider.skos import ConceptScheme
+from skosprovider.skos import Label
+from skosprovider.skos import Note
+from skosprovider.skos import dict_to_source
+
+from skosprovider_atramhasis.cache_utils import _cache_on_arguments
+from skosprovider_atramhasis.utils import dict_to_thing
 
 log = logging.getLogger(__name__)
 
 
 class AtramhasisProvider(VocabularyProvider):
-    """A provider that can work with the Atramhasis REST services (based on pyramid_skosprovider)
-    """
+    """A provider that can work with the Atramhasis REST services"""
 
     base_url = None
     '''Base URL of an Atramhasis instance.'''
@@ -34,6 +35,8 @@ class AtramhasisProvider(VocabularyProvider):
     The :class:`requests.Session` being used to make HTTP requests.
     '''
 
+    # noinspection PyMissingConstructor
+    # intentionally does not call super.
     def __init__(self, metadata, **kwargs):
         """Create a new AtramhasisProvider
 
@@ -45,8 +48,7 @@ class AtramhasisProvider(VocabularyProvider):
             * `cache_config` is an optional dict. Only keys starting with
                 "cache." are relevant.
         """
-
-        if not 'subject' in metadata:
+        if 'subject' not in metadata:
             metadata['subject'] = []
         self.metadata = metadata
         self.allowed_instance_scopes = kwargs.get(
@@ -84,8 +86,8 @@ class AtramhasisProvider(VocabularyProvider):
         return self._get_concept_scheme()
 
     def _get_concept_scheme(self):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id
-        response = self._request(request, {'Accept': 'application/json'}, dict())
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}'
+        response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             raise ProviderUnavailableException(
                 "Conceptscheme %s not found. Check your configuration." % request
@@ -94,27 +96,27 @@ class AtramhasisProvider(VocabularyProvider):
         return ConceptScheme(
             cs['uri'],
             labels=[
-                Label(l['label'] if 'label' in l.keys() else '<no label>',
-                      l['type'] if 'type' in l.keys() else 'prefLabel',
-                      l['language'] if 'language' in l.keys() else 'und')
-                for l in cs['labels']
+                Label(
+                    label.get('label', '<no label>'),
+                    label.get('type', 'prefLabel'),
+                    label.get('language', 'und'),
+                ) for label in cs['labels']
             ],
             notes=[
-                Note(n['note'] if 'note' in n.keys() else '<no note>',
-                     n['type'] if 'type' in n.keys() else 'note',
-                     n['language'] if 'language' in n.keys() else 'und',
-                     n['markup'] if 'markup' in n.keys() else None)
-                for n in cs['notes']
+                Note(
+                    note.get('note', '<no note>'),
+                    note.get('type', 'note'),
+                    note.get('language', 'und'),
+                    note.get('markup'),
+                ) for note in cs['notes']
             ],
-            sources=[
-                dict_to_source(s) for s in cs['sources']
-            ],
+            sources=[dict_to_source(s) for s in cs['sources']],
             languages=cs['languages']
         )
 
     @_cache_on_arguments(cache_name='cache')
-    def get_by_id(self, id):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id)
+    def get_by_id(self, id_):
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}/c/{id_}'
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             return False
@@ -123,7 +125,7 @@ class AtramhasisProvider(VocabularyProvider):
 
     @_cache_on_arguments(cache_name='cache')
     def get_by_uri(self, uri):
-        request = self.base_url + "/uris"
+        request = f'{self.base_url}/uris'
         params = {'uri': uri}
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
@@ -136,8 +138,7 @@ class AtramhasisProvider(VocabularyProvider):
     def find(self, query, **kwargs):
         # interprete and validate query parameters
 
-        params = {}
-        params['language'] = self._get_language(**kwargs)
+        params = {'language': self._get_language(**kwargs)}
         params.update(self._get_sort_params(**kwargs))
 
         # Label
@@ -151,11 +152,15 @@ class AtramhasisProvider(VocabularyProvider):
         # Collection to search in (optional)
         if 'collection' in query:
             collection = query['collection']
-            if not 'id' in collection:
-                raise ValueError("collection: 'id' is required key if a collection-dictionary is given")
+            if 'id' not in collection:
+                raise ValueError(
+                    "collection: 'id' is required key if a collection-dictionary is given"
+                )
             params['collection'] = collection['id']
             if 'depth' in collection and collection['depth'] != 'all':
-                    raise ValueError("collection - 'depth': only 'all' is supported by Atramhasis")
+                raise ValueError(
+                    "collection - 'depth': only 'all' is supported by Atramhasis"
+                )
 
         # Match
         if 'matches' in query:
@@ -168,7 +173,7 @@ class AtramhasisProvider(VocabularyProvider):
             if match_type:
                 params['match_type'] = match_type
 
-        search_url = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
+        search_url = f'{self.base_url}/conceptschemes/{self.scheme_id}/c/'
         response = self._request(search_url, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
             return False
@@ -176,9 +181,8 @@ class AtramhasisProvider(VocabularyProvider):
 
     @_cache_on_arguments(cache_name='cache')
     def get_all(self, **kwargs):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/"
-        params = dict()
-        params['language'] = self._get_language(**kwargs)
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}/c/'
+        params = {'language': self._get_language(**kwargs)}
         params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
@@ -187,9 +191,8 @@ class AtramhasisProvider(VocabularyProvider):
 
     @_cache_on_arguments(cache_name='cache')
     def get_top_concepts(self, **kwargs):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/topconcepts"
-        params = dict()
-        params['language'] = self._get_language(**kwargs)
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}/topconcepts'
+        params = {'language': self._get_language(**kwargs)}
         params.update(self._get_sort_params(**kwargs))
         response = self._request(request, {'Accept': 'application/json'}, params)
         if response.status_code == 404:
@@ -198,7 +201,19 @@ class AtramhasisProvider(VocabularyProvider):
 
     @_cache_on_arguments(cache_name='cache')
     def get_top_display(self, **kwargs):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/displaytop"
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}/displaytop'
+        params = {'language': self._get_language(**kwargs)}
+        params.update(self._get_sort_params(**kwargs))
+        response = self._request(request, {'Accept': 'application/json'}, params)
+        if response.status_code == 404:
+            return False
+        return response.json()
+
+    @_cache_on_arguments(cache_name='cache')
+    def get_children_display(self, id_, **kwargs):
+        request = (
+            f'{self.base_url}/conceptschemes/{self.scheme_id}/c/{id_}/displaychildren'
+        )
         params = dict()
         params['language'] = self._get_language(**kwargs)
         params.update(self._get_sort_params(**kwargs))
@@ -208,19 +223,8 @@ class AtramhasisProvider(VocabularyProvider):
         return response.json()
 
     @_cache_on_arguments(cache_name='cache')
-    def get_children_display(self, id, **kwargs):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/displaychildren"
-        params = dict()
-        params['language'] = self._get_language(**kwargs)
-        params.update(self._get_sort_params(**kwargs))
-        response = self._request(request, {'Accept': 'application/json'}, params)
-        if response.status_code == 404:
-            return False
-        return response.json()
-
-    @_cache_on_arguments(cache_name='cache')
-    def expand(self, id):
-        request = self.base_url + '/conceptschemes/' + self.scheme_id + "/c/" + str(id) + "/expand"
+    def expand(self, id_):
+        request = f'{self.base_url}/conceptschemes/{self.scheme_id}/c/{id_}/expand'
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code != 200:
             return False
@@ -238,14 +242,18 @@ class AtramhasisProvider(VocabularyProvider):
         try:
             res = self.session.get(request, headers=headers, params=params)
         except ConnectionError:
-            raise ProviderUnavailableException("Request could not be executed \
-                    due to connection issues- Request: %s" % (request,))
-        except Timeout: # pragma: no cover
-            raise ProviderUnavailableException("Request could not be executed \
-                    due to timeout - Request: %s" % (request,))
+            raise ProviderUnavailableException(
+                f"Request could not be executed due to connection issues - "
+                f"Request: {request}"
+            )
+        except Timeout:  # pragma: no cover
+            raise ProviderUnavailableException(
+                f"Request could not be executed due to timeout - Request: {request}"
+            )
         if res.status_code >= 500:
-            raise ProviderUnavailableException("Request could not be executed \
-                    due to server issues - Request: %s" % (request,))
+            raise ProviderUnavailableException(
+                f"Request could not be executed due to server issues - Request: {request}"
+            )
         if not res.encoding:
             res.encoding = 'utf-8'
         return res

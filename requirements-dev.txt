@@ -2,13 +2,11 @@
 --requirement requirements.txt
 
 # Documentation
-Sphinx==3.4.3; python_version < '3.5'
-Sphinx==3.4.3; python_version >= '3.5'
+Sphinx==3.4.3
 
 # Unit testing
 tox==3.14.5
-pytest==4.6.9 ; python_version < '3.0'
-pytest==5.3.5 ; python_version >= '3.0'
+pytest==5.3.5
 responses==0.10.9
 pytest-cov==2.8.1
 coveralls==1.11.1
