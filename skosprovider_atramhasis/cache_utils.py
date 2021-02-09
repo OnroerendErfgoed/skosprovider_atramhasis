@@ -5,10 +5,8 @@ Utility functions for chaching in :mod:`skosprovider_atramhasis`.
 import functools
 import json
 
-from dogpile.util import compat
 
-
-def _atramhasis_key_generator(namespace, fn, to_str=compat.string_type):
+def _atramhasis_key_generator(namespace, fn, to_str=str):
     """
     This is mostly a copy of dogpile.cache.util.function_key_generator.
 

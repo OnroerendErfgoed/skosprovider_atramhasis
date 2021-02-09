@@ -12,7 +12,7 @@ packages = [
 requires = [
     'skosprovider>=0.7.0',
     'requests',
-    'dogpile.cache>=0.9.0',
+    'dogpile.cache>=1.1.0',
 ]
 setup(
     name='skosprovider_atramhasis',
