@@ -51,6 +51,7 @@ class AtramhasisProvider(VocabularyProvider):
         if 'subject' not in metadata:
             metadata['subject'] = []
         self.metadata = metadata
+        self._conceptscheme = None
         self.allowed_instance_scopes = kwargs.get(
             'allowed_instance_scopes',
             ['single', 'threaded_thread']
@@ -83,7 +84,9 @@ class AtramhasisProvider(VocabularyProvider):
 
     @property
     def concept_scheme(self):
-        return self._get_concept_scheme()
+        if self._conceptscheme is None:
+            self._conceptscheme = self._get_concept_scheme()
+        return self._conceptscheme
 
     def _get_concept_scheme(self):
         request = f'{self.base_url}/conceptschemes/{self.scheme_id}'
