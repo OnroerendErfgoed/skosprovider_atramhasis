@@ -1,9 +1,6 @@
 import os
 
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
@@ -13,12 +10,13 @@ packages = [
 ]
 
 requires = [
-    'skosprovider>=0.7.0',
-    'requests'
+    'skosprovider>=0.7.1',
+    'requests',
+    'dogpile.cache>=1.1.0',
 ]
 setup(
     name='skosprovider_atramhasis',
-    version='0.3.1',
+    version='0.4.0',
     description='Skosprovider implementation of Atramhasis Vocabularies',
     long_description=README,
     long_description_content_type='text/x-rst',
@@ -32,7 +30,6 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',

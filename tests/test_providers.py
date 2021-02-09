@@ -1,25 +1,18 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 import unittest
 from contextlib import contextmanager
 
-from skosprovider.exceptions import ProviderUnavailableException
-from skosprovider.skos import (
-    ConceptScheme,
-    Concept
-)
-
+import pytest
 import responses
+from skosprovider.exceptions import ProviderUnavailableException
+from skosprovider.skos import Concept
+from skosprovider.skos import ConceptScheme
 
-from skosprovider_atramhasis.providers import (
-    AtramhasisProvider
-)
+from skosprovider_atramhasis.providers import AtramhasisProvider
 from tests import init_responses
 
-import pytest
 
-
-@unittest.skip("Tests that use the OE thesaurus are skipped by default to avoid dependencies.")
+@unittest.skip("Tests that use the OE thesaurus are skipped by default to "
+               "avoid dependencies.")
 class AtramhasisProviderDemoTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -114,16 +107,6 @@ class AtramhasisProviderDemoTests(unittest.TestCase):
         self.assertRaises(ValueError, provider.find,
                           {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'very deep'}})
         self.assertRaises(ValueError, provider.find, {'type': 'concept', 'collection': {'depth': 'all'}})
-
-    def test_find_with_collection_all(self):
-        r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
-            {'type': 'concept', 'collection': {'id': self.collection_id, 'depth': 'all'}})
-        assert len(r) > 0
-        keys_first_display = r[0].keys()
-        for key in ['id', 'type', 'label', 'uri']:
-            assert key in keys_first_display
-        for res in r:
-            assert res['type'] == 'concept'
 
     def test_find_collections(self):
         r = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id).find(
