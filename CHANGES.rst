@@ -1,3 +1,10 @@
+0.4.0 (2021-02-09)
+------------------
+- Upgrade libraries, fe dogpile.cache (#95)
+- Drop support for python 2 (#96)
+- Only build property concept_scheme once (#97)
+- Lazy access concept_scheme.uri (#98)
+
 0.3.1 (2020-02-19)
 ------------------
 
