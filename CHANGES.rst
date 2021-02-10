@@ -1,3 +1,7 @@
+0.4.1 (2021-02-10)
+------------------
+- The variabele scheme_id in AtramhasisProvider is used before the variabele is defined. (#106)
+
 0.4.0 (2021-02-09)
 ------------------
 - Upgrade libraries, fe dogpile.cache (#95)
