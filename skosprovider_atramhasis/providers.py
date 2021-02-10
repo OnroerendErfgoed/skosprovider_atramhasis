@@ -51,7 +51,11 @@ class AtramhasisProvider(VocabularyProvider):
         if 'subject' not in metadata:
             metadata['subject'] = []
         if 'uri' not in metadata:
-            metadata['uri'] = f'{self.base_url}/conceptschemes/{self.scheme_id}'
+            log.warning(
+                "AtramhasisProvider: 'uri' is not present in the metadata. "
+                "This will result in a http call to fetch the conceptscheme "
+                "and extract the uri."
+            )
         self.metadata = metadata
         self._conceptscheme = None
         self.allowed_instance_scopes = kwargs.get(
