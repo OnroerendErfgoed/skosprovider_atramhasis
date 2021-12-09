@@ -27,8 +27,8 @@ class AtramhasisProviderDemoTests(unittest.TestCase):
         cls.scheme_id = 'ERFGOEDTYPES'
         cls.concept_id = 1
         cls.concept_uri = 'https://id.erfgoed.net/thesauri/erfgoedtypes/1'
-        cls.collection_id = 2132
-        cls.collection_uri = 'https://id.erfgoed.net/thesauri/erfgoedtypes/2132'
+        cls.collection_id = 1373
+        cls.collection_uri = 'https://id.erfgoed.net/thesauri/erfgoedtypes/1373'
 
     def test_get_top_concepts_provider(self):
         provider = AtramhasisProvider({'id': 'ERFGOEDTYPES'}, base_url=self.base_url, scheme_id=self.scheme_id)
