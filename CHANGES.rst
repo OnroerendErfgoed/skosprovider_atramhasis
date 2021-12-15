@@ -1,3 +1,8 @@
+1.0.0 (2021-12-15)
+------------------
+- Upgrade requirements. Including skosprovider 1.1.0 (#116)
+
+
 0.4.1 (2021-02-10)
 ------------------
 - The variabele scheme_id in AtramhasisProvider is used before the variabele is defined. (#106)
