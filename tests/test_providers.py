@@ -188,6 +188,28 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         assert len(cs.notes) == 1
         assert len(cs.sources) == 1
 
+    def test_request_retries(self):
+        with responses.RequestsMock() as rsps:
+            for response_status in (500, 500, 500, 500, 200):
+                rsps.add(
+                    method=rsps.GET,
+                    url='http://localhost/conceptschemes/MATERIALS',
+                    status=response_status,
+                    json={
+                        'uri': 'http://localhost/conceptschemes/MATERIALS',
+                        'labels': [],
+                        'notes': [],
+                        'sources': [],
+                        'languages': [],
+                    }
+                )
+            cs = AtramhasisProvider(
+                {'id': 'Atramhasis'},
+                base_url='http://localhost',
+                scheme_id='MATERIALS',
+            ).concept_scheme
+            assert isinstance(cs, ConceptScheme)
+
     @responses.activate
     def test_get_top_concepts_provider(self):
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES')
