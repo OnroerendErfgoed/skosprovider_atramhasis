@@ -1,6 +1,5 @@
 1.0.0 (2021-12-17)
 ------------------
-- Drop python 2 support
 - Upgrade requirements. Including skosprovider 1.1.0 (#116)
 - Retry GET calls within _request method 5 times before giving up (#120)
 
