@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'skosprovider_atramhasis'
-copyright = u'2015-2019, Flanders Heritage Agency'
+copyright = u'2015-2021, Flanders Heritage Agency'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
