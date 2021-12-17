@@ -248,21 +248,20 @@ class AtramhasisProvider(VocabularyProvider):
         return {}
 
     def _request(self, request, headers=None, params=None):
-        try:
-            res = self.session.get(request, headers=headers, params=params)
-        except ConnectionError:
-            raise ProviderUnavailableException(
-                f"Request could not be executed due to connection issues - "
-                f"Request: {request}"
-            )
-        except Timeout:  # pragma: no cover
-            raise ProviderUnavailableException(
-                f"Request could not be executed due to timeout - Request: {request}"
-            )
-        if res.status_code >= 500:
-            raise ProviderUnavailableException(
-                f"Request could not be executed due to server issues - Request: {request}"
-            )
-        if not res.encoding:
-            res.encoding = 'utf-8'
-        return res
+        response = None
+        for _ in range(5):
+            try:
+                response = self.session.get(
+                    request, headers=headers, params=params, timeout=10
+                )
+            except (ConnectionError, Timeout) as e:
+                log.debug(f"Failed to execute request {request}: {e}")
+                continue
+            if response.status_code >= 500:
+                log.debug(f"Failed to execute request {request}: {response}")
+                continue
+            return response
+        raise ProviderUnavailableException(
+            f"Request could not be rexecuted - "
+            f"Request: {request} - Response: {response}"
+        )
