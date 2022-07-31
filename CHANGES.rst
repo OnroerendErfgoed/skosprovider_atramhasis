@@ -1,3 +1,8 @@
+next version (2022-??-??)
+-------------------------
+
+- Update documentation (#131)
+
 1.0.0 (2021-12-17)
 ------------------
 - Upgrade requirements. Including skosprovider 1.1.0 (#116)
