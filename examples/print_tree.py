@@ -7,8 +7,6 @@ a pdf or imported in a python Sphinx documentation project.
 '''
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
-from skosprovider.providers import DictionaryProvider
-from skosprovider.utils import dict_dumper
 
 import requests
 
@@ -23,12 +21,8 @@ def title(title, underline='='):
 def list(items, provider, indent=''):
     print()
     for i in items:
-        if i['type'] == 'collection':
-            tpl = '%s* <`%s <%s>`_>' if i['type'] == 'collection' else '%s* `%s <%s>`_'
-            print(tpl % (indent, i['label'], i['uri']))
-        else:
-            tpl = '%s* `%s <%s>`_'
-            print(tpl % (indent, i['label'], i['uri']))
+        tpl = '%s* <`%s <%s>`_>' if i['type'] == 'collection' else '%s* `%s <%s>`_'
+        print(tpl % (indent, i['label'], i['uri']))
 
         child = provider.get_children_display(
             i['id'],
