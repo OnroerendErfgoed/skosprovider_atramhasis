@@ -14,9 +14,11 @@ import requests
 # TOP_CONCEPTS = None
 TOP_CONCEPTS = [359]
 
+
 def title(title, underline='='):
     print(title)
     print(underline * len(title))
+
 
 def list(items, provider, indent=''):
     print()
@@ -32,6 +34,7 @@ def list(items, provider, indent=''):
         if (len(child)):
             list(child, provider, indent=indent + ' ')
     print()
+
 
 def main():
     # Keep cache in between runs of the script
@@ -63,7 +66,7 @@ def main():
                 'label': tc.label('nl-BE').label
             })
     else:
-        top = provider.get_top_display(language='nl-BE',sort='label')
+        top = provider.get_top_display(language='nl-BE', sort='label')
 
     for t in top:
         tpl = '<%s> (%s)' if t['type'] == 'collection' else '%s (%s)'
@@ -76,6 +79,7 @@ def main():
             sort='label'
         )
         list(child, provider)
+
 
 if __name__ == "__main__":
     main()
