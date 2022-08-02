@@ -8,8 +8,6 @@ a pdf or imported in a python Sphinx documentation project.
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 
-import requests
-
 # Use to only generate the tree for certain top terms.
 # TOP_CONCEPTS = None
 TOP_CONCEPTS = [359]
@@ -20,7 +18,7 @@ def title(title, underline='='):
     print(underline * len(title))
 
 
-def list(items, provider, indent=''):
+def list_c(items, provider, indent=''):
     print()
     for i in items:
         tpl = '%s* <`%s <%s>`_>' if i['type'] == 'collection' else '%s* `%s <%s>`_'
@@ -31,8 +29,8 @@ def list(items, provider, indent=''):
             language='nl-BE',
             sort='label'
         )
-        if (len(child)):
-            list(child, provider, indent=indent + ' ')
+        if len(child):
+            list_c(child, provider, indent=indent + ' ')
     print()
 
 
@@ -78,7 +76,7 @@ def main():
             language='nl-BE',
             sort='label'
         )
-        list(child, provider)
+        list_c(child, provider)
 
 
 if __name__ == "__main__":
