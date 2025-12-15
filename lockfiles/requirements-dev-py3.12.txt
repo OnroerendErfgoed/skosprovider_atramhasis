@@ -1,69 +1,71 @@
-cachetools==5.5.0
+cachetools==6.2.3
     # via pyld
-certifi==2024.8.30
+certifi==2025.11.12
     # via requests
-charset-normalizer==3.3.2
+charset-normalizer==3.4.4
     # via requests
-coverage==7.6.1
+coverage==7.13.0
     # via
     #   coveralls
     #   pytest-cov
-coveralls==4.0.1
+coveralls==4.0.2
     # via skosprovider-atramhasis (pyproject.toml)
-decorator==5.1.1
+decorator==5.2.1
     # via dogpile-cache
 docopt==0.6.2
     # via coveralls
-dogpile-cache==1.1.4
+dogpile-cache==1.5.0
     # via skosprovider-atramhasis (pyproject.toml)
-frozendict==2.4.4
+frozendict==2.4.7
     # via pyld
 html5lib==1.1
     # via skosprovider
-idna==3.10
+idna==3.11
     # via requests
-iniconfig==2.0.0
+iniconfig==2.3.0
     # via pytest
 language-tags==1.2.0
     # via skosprovider
-lxml==5.3.0
+lxml==6.0.2
     # via pyld
-packaging==24.1
+packaging==25.0
     # via pytest
-pbr==6.1.0
-    # via stevedore
-pluggy==1.5.0
+pluggy==1.6.0
+    # via
+    #   pytest
+    #   pytest-cov
+pygments==2.19.2
     # via pytest
-pyld==2.0.4
+pyld==2.0.3
     # via skosprovider
-pytest==8.3.3
+pytest==9.0.2
     # via
     #   skosprovider-atramhasis (pyproject.toml)
     #   pytest-cov
-pytest-cov==5.0.0
+pytest-cov==7.0.0
     # via skosprovider-atramhasis (pyproject.toml)
-pyyaml==6.0.2
+pyyaml==6.0.3
     # via responses
-requests==2.32.3
+requests==2.32.5
     # via
     #   skosprovider-atramhasis (pyproject.toml)
     #   coveralls
     #   responses
-responses==0.25.3
+responses==0.25.8
     # via skosprovider-atramhasis (pyproject.toml)
 rfc3987==1.3.8
     # via skosprovider
-six==1.16.0
+six==1.17.0
     # via html5lib
-skosprovider==1.1.0
+skosprovider==1.5.1
     # via skosprovider-atramhasis (pyproject.toml)
-stevedore==5.3.0
+stevedore==5.6.0
     # via dogpile-cache
-urllib3==2.2.3
+urllib3==2.6.2
     # via
     #   requests
     #   responses
-uv==0.4.1
+uv==0.9.17
     # via skosprovider-atramhasis (pyproject.toml)
 webencodings==0.5.1
     # via html5lib
