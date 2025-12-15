@@ -1,3 +1,12 @@
+1.1.0 (2025-12-15)
+-------------------------
+
+- Move to Github Actions + change build to pyproj.toml (#134)
+- Upgrade skosprovider dependency
+- Add workflow: Verify that the package can be built and is ready for upload to PyPI. (#137)
+- Update documentation (#131)
+- Drop support for Python < 3.10 (#127)
+
 1.0.0 (2021-12-17)
 ------------------
 - Upgrade requirements. Including skosprovider 1.1.0 (#116)

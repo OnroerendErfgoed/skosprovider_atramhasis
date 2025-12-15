@@ -17,16 +17,15 @@ Atramhasis, but do have a backend that implements the services offered by
 pyramid_skosprovider, you can use :mod:`skosprovider_atramhasis` as well.
 
 Finally, if you have a backend that does not implement
-:mod:`pyramid_skosprovider`, but implements exactly the same services,you could
+:mod:`pyramid_skosprovider`, but implements exactly the same services, you could
 use that as well.
 
 Installation
 ------------
 
 To be able to use this library you need to have a modern version of Python
-installed. Currently we're supporting versions 2.7, and the last 3 versions of
-Python 3. Support for Python 2 is about to be removed though, so we advise
-going to Python 3 right away.
+installed. Currently we're supporting the last 3 versions of
+Python 3.
 
 This easiest way to install this library is through :command:`pip` or
 :command:`easy install`:
@@ -44,8 +43,10 @@ depends on.
 Using the providers
 ===================
 For demonstration purposes of :class:`~skosprovider_atramhasis.providers.AtramhasisProvider`,
-the following examples use the Atramhasis-demo on 'http://glacial-bastion-1106.herokuapp.com'.
-You can adapt the examples with your own instance of Atramhasis, by changing the 'base_url' and 'scheme_id'.
+the following examples use the `Flanders Heritage <https://www.onroerenderfgoed.be>`_ thesauri 
+hosted at it's own `thesaurus website <https://thesaurus.onroerenderfgoed.be>`_.
+You can adapt the examples with your own instance of Atramhasis, by changing the *base_url* 
+and *scheme_id*.
 
 Using AtramhasisProvider
 --------------------------
@@ -54,6 +55,10 @@ The :class:`~skosprovider_atramhasis.providers.AtramhasisProvider` is a
 general provider for the Atramhasis vocabularies. It's use is identical to
 all other SKOSProviders. A base_url of the Atramhasis instance and a scheme_id are required to indicate the vocabulary
 to be used. Please consult :ref:`supported_thesauri` for a complete list.
+
+For better perfomance in an environment with a  :class:`skosprovider.registry.Registry`
+we recommend manually providing the *uri* parameter as metadata. This can 
+cut out the need for a call to the backend upon initialisation.
 
 .. literalinclude:: ../../examples/provider.py
    :language: python
