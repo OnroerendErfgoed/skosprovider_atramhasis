@@ -174,7 +174,11 @@ class AtramhasisProviderMockTests(unittest.TestCase):
         import requests
         sess = requests.Session()
         provider = AtramhasisProvider({'id': 'Atramhasis'}, base_url='http://localhost', scheme_id='STYLES', session=sess)
-        assert sess == provider.session
+        try:
+            assert sess == provider.session
+        finally:
+            sess.close()
+
 
     @responses.activate
     def test_conceptscheme(self):
