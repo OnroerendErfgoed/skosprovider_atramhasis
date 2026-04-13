@@ -43,6 +43,7 @@ dev = [
     "responses>=0.25.3",
     "pytest-cov>=5.0.0",
     "coveralls>=4.0.1",
+    "pre-commit",
 ]
 
 ##
@@ -63,3 +64,14 @@ content-type = "text/x-rst"
 fragments = [
   { path = "README.rst" },
 ]
+
+[tool.ruff]
+line-length = 90
+
+[tool.ruff.lint.isort]
+force-single-line = true
+force-sort-within-sections = true
+known-first-party = ["skosprovider_atramhasis"]
+
+[tool.ruff.format]
+quote-style = "single"

@@ -2,6 +2,7 @@
 This module implements a :class:`skosprovider.providers.VocabularyProvider`
 for Atramhasis
 """
+
 import logging
 
 import requests
@@ -25,15 +26,15 @@ class AtramhasisProvider(VocabularyProvider):
     """A provider that can work with the Atramhasis REST services"""
 
     base_url = None
-    '''Base URL of an Atramhasis instance.'''
+    """Base URL of an Atramhasis instance."""
 
     scheme_id = None
-    '''Identifier of the ConceptScheme this provider is managing.'''
+    """Identifier of the ConceptScheme this provider is managing."""
 
     session = None
-    '''
+    """
     The :class:`requests.Session` being used to make HTTP requests.
-    '''
+    """
 
     # noinspection PyMissingConstructor
     # intentionally does not call super.
@@ -53,39 +54,33 @@ class AtramhasisProvider(VocabularyProvider):
         if 'uri' not in metadata:
             log.warning(
                 "AtramhasisProvider: 'uri' is not present in the metadata. "
-                "This will result in a http call to fetch the conceptscheme "
-                "and extract the uri."
+                'This will result in a http call to fetch the conceptscheme '
+                'and extract the uri.'
             )
         self.metadata = metadata
         self._conceptscheme = None
         self.allowed_instance_scopes = kwargs.get(
-            'allowed_instance_scopes',
-            ['single', 'threaded_thread']
+            'allowed_instance_scopes', ['single', 'threaded_thread']
         )
         if 'base_url' in kwargs:
             self.base_url = kwargs['base_url']
         else:
-            raise ValueError("Please provide a base_url for the provider")
+            raise ValueError('Please provide a base_url for the provider')
         if 'scheme_id' in kwargs:
             self.scheme_id = kwargs['scheme_id']
         else:
-            raise ValueError("Please provide a scheme_id for the provider")
+            raise ValueError('Please provide a scheme_id for the provider')
 
         if 'session' in kwargs:
             self.session = kwargs['session']
         else:
             self.session = requests.Session()
 
-        self.caches = {
-            'cache': make_region()
-        }
+        self.caches = {'cache': make_region()}
         if not self.caches['cache'].is_configured:
             self.caches['cache'].configure_from_config(
-                kwargs.get(
-                    'cache_config',
-                    {'cache.backend': 'dogpile.cache.null'}
-                ),
-                prefix='cache.'
+                kwargs.get('cache_config', {'cache.backend': 'dogpile.cache.null'}),
+                prefix='cache.',
             )
 
     @property
@@ -99,7 +94,7 @@ class AtramhasisProvider(VocabularyProvider):
         response = self._request(request, {'Accept': 'application/json'})
         if response.status_code == 404:
             raise ProviderUnavailableException(
-                "Conceptscheme %s not found. Check your configuration." % request
+                'Conceptscheme %s not found. Check your configuration.' % request
             )
         cs = response.json()
         return ConceptScheme(
@@ -109,7 +104,8 @@ class AtramhasisProvider(VocabularyProvider):
                     label.get('label', '<no label>'),
                     label.get('type', 'prefLabel'),
                     label.get('language', 'und'),
-                ) for label in cs['labels']
+                )
+                for label in cs['labels']
             ],
             notes=[
                 Note(
@@ -117,10 +113,11 @@ class AtramhasisProvider(VocabularyProvider):
                     note.get('type', 'note'),
                     note.get('language', 'und'),
                     note.get('markup'),
-                ) for note in cs['notes']
+                )
+                for note in cs['notes']
             ],
             sources=[dict_to_source(s) for s in cs['sources']],
-            languages=cs['languages']
+            languages=cs['languages'],
         )
 
     @_cache_on_arguments(cache_name='cache')
@@ -255,13 +252,12 @@ class AtramhasisProvider(VocabularyProvider):
                     request, headers=headers, params=params, timeout=10
                 )
             except (ConnectionError, Timeout) as e:
-                log.debug(f"Failed to execute request {request}: {e}")
+                log.debug(f'Failed to execute request {request}: {e}')
                 continue
             if response.status_code >= 500:
-                log.debug(f"Failed to execute request {request}: {response}")
+                log.debug(f'Failed to execute request {request}: {response}')
                 continue
             return response
         raise ProviderUnavailableException(
-            f"Request could not be rexecuted - "
-            f"Request: {request} - Response: {response}"
+            f'Request could not be rexecuted - Request: {request} - Response: {response}'
         )

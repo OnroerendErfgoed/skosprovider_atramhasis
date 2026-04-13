@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 
 def text_(s, encoding='latin-1', errors='strict'):
-    """ If ``s`` is an instance of ``binary_type``, return
+    """If ``s`` is an instance of ``binary_type``, return
     ``s.decode(encoding, errors)``, otherwise return ``s``"""
     if isinstance(s, bytes):
         return s.decode(encoding, errors)
@@ -36,12 +36,12 @@ def dict_to_thing(data_dict):
         if 'id' in data_dict:
             id_ = data_dict['id']
         else:
-            raise ValueError("id: No id available in dict")
+            raise ValueError('id: No id available in dict')
 
         if 'type' in data_dict:
             type_ = data_dict['type']
         else:
-            raise ValueError("type: type is not defined in dict")
+            raise ValueError('type: type is not defined in dict')
 
         if type_ == 'concept':
             thing = Concept(id_)
@@ -64,10 +64,13 @@ def dict_to_thing(data_dict):
             raise ValueError("type: type is not valid ('concept', 'collection') in dict")
         thing.type = type_
         thing.uri = data_dict['uri'] if 'uri' in data_dict else None
-        thing.concept_scheme = (ConceptScheme(data_dict['concept_scheme'])
-                                if 'concept_scheme' in data_dict else None)
+        thing.concept_scheme = (
+            ConceptScheme(data_dict['concept_scheme'])
+            if 'concept_scheme' in data_dict
+            else None
+        )
         if 'labels' in data_dict:
-            thing.labels = [(dict_to_label(l)) for l in data_dict['labels']]
+            thing.labels = [(dict_to_label(label)) for label in data_dict['labels']]
         if 'notes' in data_dict:
             thing.notes = [(dict_to_note(n)) for n in data_dict['notes']]
         if 'sources' in data_dict:
