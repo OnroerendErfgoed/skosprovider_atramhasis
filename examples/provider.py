@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-'''
+"""
 This script demonstrates using the AtramhasisProvider to get the concept of
 'water tricks'.
-'''
+"""
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
+
 
 def main():
     # you can adapt this example by using the base_url of another
@@ -14,16 +15,16 @@ def main():
     provider = AtramhasisProvider(
         {'id': 'vioe-erfgoedtypes)'},
         base_url='https://thesaurus.onroerenderfgoed.be',
-        scheme_id='ERFGOEDTYPES')
+        scheme_id='ERFGOEDTYPES',
+    )
     id = 1524
 
     result = provider.get_by_id(id)
 
-
     print('Labels')
     print('------')
-    for l in result.labels:
-       print(l.language + ': ' + l.label + ' [' + l.type + ']')
+    for label in result.labels:
+        print(label.language + ': ' + label.label + ' [' + label.type + ']')
 
     print('Notes')
     print('-----')
@@ -31,5 +32,5 @@ def main():
         print(n.language + ': ' + n.note + ' [' + n.type + ']')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
