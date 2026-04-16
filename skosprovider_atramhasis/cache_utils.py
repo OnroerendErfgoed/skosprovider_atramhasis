@@ -21,9 +21,13 @@ def _atramhasis_key_generator(namespace, fn, to_str=str):
 
     def generate_key(*args, **kwargs):
         provider = args[0]
-        args = ([provider.base_url, provider.scheme_id]
-                + list(args[1:]) + [json.dumps(kwargs, sort_keys=True)])
-        return namespace + "|" + " ".join(map(to_str, args))
+        args = (
+            [provider.base_url, provider.scheme_id]
+            + list(args[1:])
+            + [json.dumps(kwargs, sort_keys=True)]
+        )
+        return namespace + '|' + ' '.join(map(to_str, args))
+
     return generate_key
 
 
@@ -47,6 +51,7 @@ def _cache_on_arguments(cache_name, expiration_time=None):
     assumed to be a dict. This dict must have the `cache_name` key with
     a dogpile region as value.
     """
+
     def decorator(fn):
         key_generator = _atramhasis_key_generator(None, fn)
 
@@ -57,5 +62,7 @@ def _cache_on_arguments(cache_name, expiration_time=None):
             return self.caches[cache_name].get_or_create(
                 key, fn, expiration_time, _dont_cache_false, (args, kwargs)
             )
+
         return wrapped
+
     return decorator

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-'''
+"""
 This script demonstrates using the AtramhasisProvider to expand a concept
-'''
+"""
 
 from skosprovider_atramhasis.providers import AtramhasisProvider
 
@@ -14,8 +14,9 @@ def main():
     provider = AtramhasisProvider(
         {'id': 'vioe-erfgoedtypes)'},
         base_url='https://thesaurus.onroerenderfgoed.be',
-        scheme_id='ERFGOEDTYPES')
-    id = 63 # Id for auxiliary buildings
+        scheme_id='ERFGOEDTYPES',
+    )
+    id = 63  # Id for auxiliary buildings
 
     results = provider.expand(id)
 
@@ -25,5 +26,5 @@ def main():
         print(result)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
