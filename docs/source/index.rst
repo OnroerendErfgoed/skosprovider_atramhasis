@@ -6,6 +6,15 @@
 Skosprovider_atramhasis
 =======================
 
+.. warning::
+
+   This package is deprecated. Starting from ``skosprovider`` 2.0.0 the
+   functionality of this package has been merged into the main
+   `skosprovider <https://github.com/OnroerendErfgoed/skosprovider/>`_
+   repository. This package will remain usable with ``skosprovider < 2.0.0``,
+   but is no longer actively maintained. It is recommended to upgrade to
+   ``skosprovider >= 2.0.0`` and use ``skosprovider_atramhasis`` from there.
+
 .. toctree::
    :maxdepth: 2
 
